@@ -1,0 +1,51 @@
+# File: pyproject.toml
+
+[tool.black]
+line-length = 127
+target-version = ['py311']
+include = '\.pyi?
+extend-exclude = '''
+/(
+    # directories
+    \.eggs
+  | \.git          
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 127
+skip_glob = ["*/migrations/*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "pefoma_backend.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+python_classes = ["Test*", "*Tests"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",
+    "--tb=short", 
+    "--strict-markers",
+    "--disable-warnings",
+    "--cov=auth_integration",
+    "--cov=users", 
+    "--cov-report=term-missing",
+    "--cov-report=html:htmlcov"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests"
+]
