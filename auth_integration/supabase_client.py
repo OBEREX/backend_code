@@ -253,7 +253,7 @@ class SupabaseClient:
                 'message': 'An error occurred during verification'
             }
     
-    def generate_otp(self, email: str = None, phone: str = None, type: str = "registration") -> Dict[str, Any]:
+    def generate_otp(self, email: Optional[str] = None, phone: Optional[str] = None, type: str = "registration") -> Optional[str]:
         """
         Generate OTP using custom Supabase function.
         
@@ -263,7 +263,7 @@ class SupabaseClient:
             type: OTP type
             
         Returns:
-            Dict with success status and token
+            The OTP token as a string, or None if generation failed
         """
         try:
             response = self.service_client.rpc('generate_otp', {
@@ -275,19 +275,12 @@ class SupabaseClient:
             result = response.data
             logger.info(f"OTP generation result: {result}")
             
-            return result or {
-                'success': False,
-                'error': 'GENERATION_FAILED',
-                'message': 'Failed to generate OTP'
-            }
+            # Assume result is the OTP token string or None
+            return result if isinstance(result, str) else None
             
         except Exception as e:
             logger.error(f"Error generating OTP: {str(e)}")
-            return {
-                'success': False,
-                'error': 'GENERATION_ERROR',
-                'message': 'An error occurred while generating OTP'
-            }
+            return None
     
     def update_last_login(self, user_id: str) -> bool:
         """
@@ -376,3 +369,112 @@ class SupabaseClient:
         except Exception as e:
             logger.error(f"Error cleaning up expired tokens: {str(e)}")
             return 0
+        
+
+
+    def send_custom_otp_email(self, email: str, otp_token: str, otp_type: str = "registration") -> Dict[str, Any]:
+        """
+        Send OTP via Supabase's email system using custom template data.
+        
+        Args:
+            email: User email
+            otp_token: The custom generated OTP token
+            otp_type: Type of OTP (registration, password_reset, email_verification)
+            
+        Returns:
+            Dict with success status
+        """
+        try:
+            # Map OTP types to Supabase email types
+            email_type_mapping = {
+                'registration': 'signup',
+                'password_reset': 'recovery', 
+                'email_verification': 'email_change',
+                'phone_verification': 'phone_change'
+            }
+            
+            supabase_email_type = email_type_mapping.get(otp_type, 'signup')
+            
+            # Use Supabase Admin API to send custom email with OTP
+            # This requires using the REST API directly as the Python client 
+            # doesn't expose all admin email functions
+            
+            headers = {
+                'apikey': self.service_key,
+                'Authorization': f'Bearer {self.service_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Prepare template data with custom OTP
+            template_data = {
+                'otp_code': otp_token,
+                'email': email,
+                'expires_in': '10 minutes',
+                'app_name': 'Pefoma',
+                'verification_type': otp_type.replace('_', ' ').title()
+            }
+            
+            # Send via Supabase Admin API
+            import requests
+            
+            url = f'{self.supabase_url}/auth/v1/admin/generate_link'
+            payload = {
+                'type': supabase_email_type,
+                'email': email,
+                'data': template_data,
+                'redirect_to': None  # We're sending OTP, not redirect link
+            }
+            
+            response = requests.post(url, json=payload, headers=headers)
+            
+            if response.status_code == 200:
+                logger.info(f"Custom OTP email sent to {email} - Type: {otp_type}")
+                return {
+                    'success': True,
+                    'message': 'OTP email sent successfully'
+                }
+            else:
+                logger.error(f"Failed to send OTP email: {response.text}")
+                return {
+                    'success': False,
+                    'error': 'EMAIL_SEND_FAILED',
+                    'message': 'Failed to send OTP email'
+                }
+                
+        except Exception as e:
+            logger.error(f"Error sending custom OTP email to {email}: {str(e)}")
+            return {
+                'success': False,
+                'error': 'EMAIL_ERROR',
+                'message': 'An error occurred while sending email'
+            }
+
+    def send_otp_with_supabase_template(self, email: str, otp_token: str, otp_type: str) -> Dict[str, Any]:
+        """
+        Alternative approach: Use Supabase's built-in email templates but inject custom OTP.
+        This method uses Edge Functions or Database Functions to send emails.
+        """
+        try:
+            # Call a custom Supabase Edge Function that handles email sending
+            response = self.service_client.rpc('send_custom_otp_email', {
+                'p_email': email,
+                'p_otp_token': otp_token,
+                'p_email_type': otp_type
+            }).execute()
+            
+            result = response.data
+            logger.info(f"Supabase template email sent: {result}")
+            
+            return result or {
+                'success': False,
+                'error': 'EMAIL_SEND_FAILED',
+                'message': 'Failed to send email via Supabase'
+            }
+            
+        except Exception as e:
+            logger.error(f"Error sending Supabase template email: {str(e)}")
+            return {
+                'success': False,
+                'error': 'EMAIL_ERROR',
+                'message': 'Email sending failed'
+            }

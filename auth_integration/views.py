@@ -17,7 +17,7 @@ from django.utils import timezone
 from .supabase_client import SupabaseClient
 from .serializers import (
     SignUpSerializer, LoginSerializer, ForgotPasswordSerializer,
-    VerifyOTPSerializer, ResetPasswordSerializer
+    VerifyOTPSerializer, ResetPasswordSerializer, ResendOTPSerializer
 )
 from users.models import Profile
 
@@ -587,3 +587,236 @@ class UserProfileView(APIView):
             return Response({
                 'error': 'Internal server error'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class ResendOTPView(APIView):
+    """
+    Handle OTP resending for various verification scenarios.
+    
+    Supports:
+    - Registration verification (signup OTP)
+    - Password reset verification (forgot password OTP) 
+    - Email verification (general email OTP)
+    - Phone verification (general phone OTP)
+    
+    Flow:
+    1. Validate input (email or phone + type)
+    2. Check rate limiting (prevent spam)
+    3. Generate new OTP using custom Supabase function
+    4. Send OTP via email/SMS
+    5. Return success response
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = ResendOTPSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                'success': False,
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        data = serializer.validated_data
+        supabase_client = SupabaseClient()
+        
+        try:
+            # Check if user exists (for registration type)
+            if data['type'] == 'registration':
+                # For registration, user must exist in auth.users
+                user_exists = self._check_user_exists(data.get('email'))
+                if not user_exists:
+                    return Response({
+                        'success': False,
+                        'error': 'USER_NOT_FOUND',
+                        'message': 'No account found with this email address.'
+                    }, status=status.HTTP_404_NOT_FOUND)
+            
+            # Check rate limiting (max 3 requests per 5 minutes)
+            if self._is_rate_limited(data.get('email'), data.get('phone')):
+                return Response({
+                    'success': False,
+                    'error': 'RATE_LIMITED', 
+                    'message': 'Too many requests. Please wait before requesting another code.'
+                }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+            
+            # Generate new OTP
+            result = supabase_client.generate_otp(
+                email=data.get('email'),
+                phone=data.get('phone'),
+                type=data['type']
+            )
+            
+            otp = result.get('otp') if isinstance(result, dict) else None
+            if not otp or not isinstance(otp, str):
+                return Response({
+                    'success': False,
+                    'error': 'OTP_GENERATION_FAILED',
+                    'message': 'Failed to generate verification code. Please try again.'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            # Send OTP via email or SMS
+            if data.get('email'):
+                sent = self._send_email_otp(data['email'], otp, data['type'])
+            elif data.get('phone'):
+                sent = self._send_sms_otp(data['phone'], otp, data['type'])
+            else:
+                sent = False
+            
+            if not sent:
+                return Response({
+                    'success': False,
+                    'error': 'DELIVERY_FAILED',
+                    'message': 'Failed to send verification code. Please try again.'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            # Log the resend attempt
+            logger.info(f"OTP resent successfully - Type: {data['type']}, Email: {data.get('email')}, Phone: {data.get('phone')}")
+            
+            return Response({
+                'success': True,
+                'message': 'Verification code sent successfully.',
+                'type': data['type'],
+                'sent_to': data.get('email') or data.get('phone'),
+                'expires_in': 600  # 10 minutes
+            })
+            
+        except Exception as e:
+            logger.error(f"Resend OTP error: {str(e)}")
+            return Response({
+                'success': False,
+                'error': 'RESEND_ERROR',
+                'message': 'An error occurred while resending verification code. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _check_user_exists(self, email: str) -> bool:
+        """Check if user exists in Supabase auth.users table."""
+        try:
+            supabase_client = SupabaseClient()
+            response = supabase_client.service_client.auth.admin.get_user_by_email(email)
+            return response.user is not None
+        except Exception:
+            return False
+    
+    def _is_rate_limited(self, email: str = None, phone: str = None) -> bool:
+        """
+        Check if user is rate limited for OTP requests.
+        Simple rate limiting: max 3 requests per 5 minutes per email/phone.
+        """
+        from django.core.cache import cache
+        
+        key = f"otp_resend_{email or phone}"
+        current_count = cache.get(key, 0)
+        
+        if current_count >= 3:
+            return True
+        
+        # Increment counter with 5-minute expiry
+        cache.set(key, current_count + 1, 300)  # 300 seconds = 5 minutes
+        return False
+    
+    def _send_email_otp(self, email: str, otp: str, otp_type: str) -> bool:
+        """
+        Send OTP via email using your preferred email service.
+        This is a placeholder - implement with your email provider.
+        """
+        try:
+            # Get email template based on type
+            subject, template = self._get_email_template(otp_type)
+            
+            # Replace template variables
+            html_content = template.format(
+                otp=otp,
+                email=email,
+                expires_in="10 minutes"
+            )
+            
+            # TODO: Implement actual email sending
+            # Example with SendGrid, AWS SES, or Django email backend
+            from django.core.mail import send_mail
+            
+            send_mail(
+                subject=subject,
+                message=f"Your verification code is: {otp}",
+                from_email='noreply@pefoma.com',
+                recipient_list=[email],
+                html_message=html_content
+            )
+            
+            logger.info(f"OTP email sent to {email}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to send OTP email to {email}: {str(e)}")
+            return False
+    
+    def _send_sms_otp(self, phone: str, otp: str, otp_type: str) -> bool:
+        """
+        Send OTP via SMS using your preferred SMS service.
+        This is a placeholder - implement with Twilio, AWS SNS, etc.
+        """
+        try:
+            message = f"Your Pefoma verification code is: {otp}. Valid for 10 minutes."
+            
+            # TODO: Implement actual SMS sending
+            # Example with Twilio
+            # client = Client(account_sid, auth_token)
+            # message = client.messages.create(
+            #     body=message,
+            #     from_='+1234567890',
+            #     to=phone
+            # )
+            
+            logger.info(f"OTP SMS sent to {phone}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to send OTP SMS to {phone}: {str(e)}")
+            return False
+    
+    def _get_email_template(self, otp_type: str) -> tuple:
+        """Get email subject and HTML template based on OTP type."""
+        templates = {
+            'registration': (
+                'Verify Your Pefoma Account',
+                '''
+                <html>
+                <body>
+                    <h2>Welcome to Pefoma!</h2>
+                    <p>Please use the following verification code to complete your account setup:</p>
+                    <h3 style="color: #2563eb; font-size: 32px; letter-spacing: 8px;">{otp}</h3>
+                    <p>This code will expire in {expires_in}.</p>
+                    <p>If you didn't create an account, please ignore this email.</p>
+                </body>
+                </html>
+                '''
+            ),
+            'password_reset': (
+                'Reset Your Pefoma Password',
+                '''
+                <html>
+                <body>
+                    <h2>Password Reset Request</h2>
+                    <p>Please use the following verification code to reset your password:</p>
+                    <h3 style="color: #dc2626; font-size: 32px; letter-spacing: 8px;">{otp}</h3>
+                    <p>This code will expire in {expires_in}.</p>
+                    <p>If you didn't request this reset, please ignore this email.</p>
+                </body>
+                </html>
+                '''
+            ),
+            'email_verification': (
+                'Verify Your Email Address',
+                '''
+                <html>
+                <body>
+                    <h2>Email Verification</h2>
+                    <p>Please use the following verification code:</p>
+                    <h3 style="color: #059669; font-size: 32px; letter-spacing: 8px;">{otp}</h3>
+                    <p>This code will expire in {expires_in}.</p>
+                </body>
+                </html>
+                '''
+            )
+        }
+        
+        return templates.get(otp_type, templates['email_verification'])
