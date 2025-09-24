@@ -26,14 +26,13 @@ logger = logging.getLogger(__name__)
 
 class SignUpView(APIView):
     """
-    Handle user registration with custom OTP verification instead of Supabase's default confirmation.
+    Handle user registration with Supabase Auth + local Profile creation.
     
     Flow:
     1. Validate input data
-    2. Create user in Supabase Auth (with email confirmation disabled)
-    3. Generate custom OTP
-    4. Send OTP via Supabase email system
-    5. Create local Profile record
+    2. Create user in Supabase Auth
+    3. Create local Profile record
+    4. Send verification email
     """
     permission_classes = [AllowAny]
     
@@ -49,8 +48,8 @@ class SignUpView(APIView):
         supabase_client = SupabaseClient()
         
         try:
-            # Step 1: Create user in Supabase Auth WITHOUT email confirmation
-            auth_result = supabase_client.create_user_without_confirmation(
+            # Create user in Supabase Auth
+            auth_result = supabase_client.create_user(
                 email=data['email'],
                 password=data['password'],
                 user_metadata={
@@ -73,28 +72,7 @@ class SignUpView(APIView):
             
             user_id = auth_result['user']['id']
             
-            # Step 2: Generate custom OTP for registration
-            otp_result = supabase_client.generate_otp(
-                email=data['email'],
-                type='registration'
-            )
-            
-            if not otp_result or not isinstance(otp_result, str):
-                logger.error(f"Failed to generate OTP for user {user_id}")
-                # Don't fail the signup, user can resend OTP later
-            else:
-                # Step 3: Send custom OTP email via Supabase
-                email_result = supabase_client.send_custom_otp_email(
-                    email=data['email'],
-                    otp_token=otp_result,
-                    otp_type='registration'
-                )
-                
-                if not email_result.get('success'):
-                    logger.warning(f"Failed to send OTP email to {data['email']}")
-                    # Don't fail signup, user can resend via resend-otp endpoint
-            
-            # Step 4: Create local Profile
+            # Create local Profile
             try:
                 profile = Profile.objects.create(
                     id=user_id,
@@ -106,7 +84,6 @@ class SignUpView(APIView):
                     business_type=data['business_type'],
                     city=data['city'],
                     state=data['state'],
-                    is_verified=False  # User needs to verify via OTP
                 )
                 logger.info(f"Created profile for user {user_id}")
                 
@@ -116,15 +93,13 @@ class SignUpView(APIView):
             
             return Response({
                 'success': True,
-                'message': 'Account created successfully. Please check your email for a 6-digit verification code.',
+                'message': 'Account created successfully. Please check your email to verify your account.',
                 'user': {
                     'id': user_id,
                     'email': data['email'],
                     'first_name': data['first_name'],
                     'last_name': data['last_name'],
-                },
-                'verification_required': True,
-                'verification_method': 'otp'
+                }
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
