@@ -516,3 +516,37 @@ Failed to create profile for user 062fa5f3-f306-4f88-bf19-f1206790c965: duplicat
 DETAIL:  Key (id)=(062fa5f3-f306-4f88-bf19-f1206790c965) already exists.
 
 "POST /auth/signup/ HTTP/1.1" 201 238
+INFO 2025-09-24 13:18:39,721 autoreload 46508 50400 Watching for file changes with StatReloader
+INFO 2025-09-24 13:19:08,849 _client 46508 47844 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-09-24 13:19:10,095 basehttp 46508 47844 "POST /auth/signup/ HTTP/1.1" 201 238
+INFO 2025-09-24 13:22:51,360 autoreload 46508 50400 C:\Users\aliba\Documents\Hesabu\pefoma_backend\pefoma_backend\settings.py changed, reloading.
+INFO 2025-09-24 13:22:53,299 autoreload 26048 32980 Watching for file changes with StatReloader
+INFO 2025-09-24 13:27:06,792 _client 26048 23004 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=password "HTTP/1.1 200 OK"
+INFO 2025-09-24 13:27:09,674 _client 26048 23004 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/update_last_login "HTTP/1.1 204 No Content"
+INFO 2025-09-24 13:27:09,691 basehttp 26048 23004 "POST /auth/login/ HTTP/1.1" 200 1698
+INFO 2025-09-24 13:30:01,581 autoreload 26048 32980 C:\Users\aliba\Documents\Hesabu\pefoma_backend\pefoma_backend\settings.py changed, reloading.
+INFO 2025-09-24 16:06:49,887 autoreload 52068 39360 Watching for file changes with StatReloader
+ERROR 2025-09-24 16:15:05,095 log 52068 11464 Internal Server Error: /auth/signup/
+ERROR 2025-09-24 16:15:05,098 basehttp 52068 11464 "POST /auth/signup/ HTTP/1.1" 500 103
+INFO 2025-09-24 16:20:12,990 autoreload 52068 39360 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\supabase_client.py changed, reloading.
+INFO 2025-09-24 16:20:15,318 autoreload 51424 40596 Watching for file changes with StatReloader
+INFO 2025-09-24 16:20:23,423 autoreload 51424 40596 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\supabase_client.py changed, reloading.
+INFO 2025-09-24 16:20:25,377 autoreload 23980 24592 Watching for file changes with StatReloader
+INFO 2025-09-24 16:20:35,375 autoreload 23980 24592 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\supabase_client.py changed, reloading.
+INFO 2025-09-24 16:20:37,354 autoreload 52136 29376 Watching for file changes with StatReloader
+INFO 2025-09-24 16:21:02,491 autoreload 52136 29376 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\supabase_client.py changed, reloading.
+INFO 2025-09-24 16:21:04,327 autoreload 31972 31388 Watching for file changes with StatReloader
+INFO 2025-09-24 16:21:13,091 autoreload 51184 28668 Watching for file changes with StatReloader
+INFO 2025-09-24 16:25:29,004 _client 51184 49952 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users "HTTP/1.1 422 Unprocessable Entity"
+WARNING 2025-09-24 16:25:29,017 log 51184 49952 Bad Request: /auth/signup/
+WARNING 2025-09-24 16:25:29,020 basehttp 51184 49952 "POST /auth/signup/ HTTP/1.1" 400 82
+INFO 2025-09-24 16:29:33,451 _client 51184 47596 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users "HTTP/1.1 200 OK"
+INFO 2025-09-24 16:29:36,495 _client 51184 47596 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-09-24 16:29:37,967 basehttp 51184 47596 "POST /auth/signup/ HTTP/1.1" 201 297
+INFO 2025-09-24 16:39:13,462 _client 51184 11380 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users "HTTP/1.1 200 OK"
+INFO 2025-09-24 16:39:16,251 _client 51184 11380 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-09-24 16:39:17,683 basehttp 51184 11380 "POST /auth/signup/ HTTP/1.1" 201 294
+INFO 2025-09-24 16:41:39,633 autoreload 51184 28668 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\supabase_client.py changed, reloading.
+INFO 2025-09-24 16:41:41,787 autoreload 40852 36380 Watching for file changes with StatReloader
+INFO 2025-09-24 16:41:46,781 autoreload 40852 36380 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\supabase_client.py changed, reloading.
+INFO 2025-09-24 16:41:48,643 autoreload 25760 51640 Watching for file changes with StatReloader

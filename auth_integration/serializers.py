@@ -156,7 +156,7 @@ class LoginSerializer(serializers.Serializer):
     )
     remember_me = serializers.BooleanField(
         required=False,
-        default=False
+        default=False # type: ignore
     )
     
     def validate_email(self, value):
