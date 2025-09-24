@@ -478,3 +478,4 @@ class SupabaseClient:
                 'error': 'EMAIL_ERROR',
                 'message': 'Email sending failed'
             }
+    

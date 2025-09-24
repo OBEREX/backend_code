@@ -2,6 +2,7 @@ import os
 import environ
 from pathlib import Path
 
+
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,10 +15,84 @@ env = environ.Env(
 # Read .env file
 environ.Env.read_env(BASE_DIR / '.env')
 
+# Token Provider: 'supabase', 'django', or 'hybrid'
+TOKEN_PROVIDER = env('TOKEN_PROVIDER', default="hybrid")
+
+# Token Provider Mode (for hybrid provider)
+# 'supabase': Use only Supabase tokens
+# 'django': Use only Django custom tokens
+# 'hybrid': Try both (useful during migration)
+TOKEN_PROVIDER_MODE = env('TOKEN_PROVIDER_MODE', default='supabase')
+
+# Django Token Settings (when using custom provider)
+DJANGO_ACCESS_TOKEN_TTL_MINUTES = env.int('DJANGO_ACCESS_TOKEN_TTL_MINUTES', default=15)
+DJANGO_REFRESH_TOKEN_TTL_DAYS = env.int('DJANGO_REFRESH_TOKEN_TTL_DAYS', default=7)
+
+# Email Provider: 'supabase', 'sendgrid', 'aws', 'django'
+EMAIL_PROVIDER = env('EMAIL_PROVIDER', default='supabase')
+
+# SendGrid Configuration (for future use)
+SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
+SENDGRID_FROM_EMAIL = env('SENDGRID_FROM_EMAIL', default='noreply@pefoma.com')
+SENDGRID_FROM_NAME = env('SENDGRID_FROM_NAME', default='Pefoma')
+
+# AWS SES Configuration (for future use)
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', default='')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', default='')
+AWS_SES_REGION = env('AWS_SES_REGION', default='us-east-1')
+AWS_SES_FROM_EMAIL = env('AWS_SES_FROM_EMAIL', default='noreply@pefoma.com')
+
+# Twilio Configuration (for SMS OTP - future use)
+TWILIO_ACCOUNT_SID = env('TWILIO_ACCOUNT_SID', default='')
+TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN', default='')
+TWILIO_PHONE_NUMBER = env('TWILIO_PHONE_NUMBER', default='')
+
+
+# Profile Sync Strategy: 'supabase_wins', 'django_wins', 'merge', 'manual'
+PROFILE_SYNC_STRATEGY = env('PROFILE_SYNC_STRATEGY', default='merge')
+
+# Enable profile sync via webhooks
+ENABLE_PROFILE_SYNC = env.bool('ENABLE_PROFILE_SYNC', default=True)
+
+# Webhook signature verification
+SUPABASE_WEBHOOK_SECRET = env('SUPABASE_WEBHOOK_SECRET', default='')
+VERIFY_WEBHOOK_SIGNATURE = env.bool('VERIFY_WEBHOOK_SIGNATURE', default=True)
+
+# Guest user settings
+ENABLE_GUEST_USERS = env.bool('ENABLE_GUEST_USERS', default=True)
+
+
 # Security
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+
+# Session management
+SESSION_IDLE_TIMEOUT_MINUTES = env.int('SESSION_IDLE_TIMEOUT_MINUTES', default=30)
+SESSION_ABSOLUTE_TIMEOUT_HOURS = env.int('SESSION_ABSOLUTE_TIMEOUT_HOURS', default=24)
+
+# OTP rate limiting
+OTP_MAX_REQUESTS_PER_HOUR = env.int('OTP_MAX_REQUESTS_PER_HOUR', default=3)
+OTP_COOLDOWN_MINUTES = env.int('OTP_COOLDOWN_MINUTES', default=5)
+
+# Password reset rate limiting  
+PASSWORD_RESET_MAX_REQUESTS_PER_HOUR = env.int('PASSWORD_RESET_MAX_REQUESTS_PER_HOUR', default=3)
+
+# API rate limiting (requests per minute)
+API_RATE_LIMIT = {
+    'guest': env.int('API_RATE_LIMIT_GUEST', default=10),
+    'free': env.int('API_RATE_LIMIT_FREE', default=60),
+    'premium': env.int('API_RATE_LIMIT_PREMIUM', default=300),
+    'enterprise': env.int('API_RATE_LIMIT_ENTERPRISE', default=1000),
+}
+
+FEATURE_FLAGS = {
+    'ENABLE_OTP_LOGIN': env.bool('ENABLE_OTP_LOGIN', default=False),
+    'ENABLE_SOCIAL_AUTH': env.bool('ENABLE_SOCIAL_AUTH', default=False),
+    'ENABLE_2FA': env.bool('ENABLE_2FA', default=False),
+    'ENABLE_CHAT': env.bool('ENABLE_CHAT', default=True),
+    'ENABLE_GUEST_CHAT': env.bool('ENABLE_GUEST_CHAT', default=True),
+}
 
 # Supabase Configuration
 SUPABASE_URL = env('SUPABASE_URL')
@@ -52,7 +127,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'auth_integration.middleware.SupabaseJWTMiddleware',  # Custom middleware
+    'auth_integration.middleware.SupabaseJWTMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -134,19 +209,54 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Logging
+# Structured logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(asctime)s %(name)s %(levelname)s %(message)s'
+        }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
     'handlers': {
         'file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': BASE_DIR / 'logs' / 'django.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 10,
+            'formatter': 'json' if not DEBUG else 'verbose',
         },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'auth_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'auth.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 10,
+            'formatter': 'json',
+        },
+        'webhook_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'webhooks.log',
+            'maxBytes': 1024 * 1024 * 5,  # 5MB
+            'backupCount': 5,
+            'formatter': 'json',
         },
     },
     'root': {
@@ -160,8 +270,18 @@ LOGGING = {
             'propagate': False,
         },
         'auth_integration': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'auth_file'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        'auth_integration.webhook': {
+            'handlers': ['webhook_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'profile_sync': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
             'propagate': False,
         },
     },
