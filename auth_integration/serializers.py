@@ -1,5 +1,3 @@
-# File: auth_integration/serializers.py
-
 from rest_framework import serializers
 from django.core.validators import RegexValidator
 import re
@@ -370,5 +368,77 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({
                 'new_password': 'New password must be different from current password'
             })
+        
+        return data
+    
+
+class ResendOTPSerializer(serializers.Serializer):
+    """
+    Serializer for OTP resending supporting multiple verification types.
+    """
+    email = serializers.EmailField(
+        required=False,
+        allow_blank=True,
+        error_messages={
+            'invalid': 'Please enter a valid email address'
+        }
+    )
+    phone = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        error_messages={
+            'invalid': 'Please enter a valid phone number'
+        }
+    )
+    type = serializers.ChoiceField(
+        choices=[
+            ('registration', 'Registration'),
+            ('password_reset', 'Password Reset'), 
+            ('email_verification', 'Email Verification'),
+            ('phone_verification', 'Phone Verification'),
+        ],
+        required=True,
+        error_messages={
+            'required': 'Verification type is required',
+            'invalid_choice': 'Invalid verification type'
+        }
+    )
+    
+    def validate_phone(self, value):
+        """Validate phone number format."""
+        if value:
+            # Basic phone validation - adjust regex based on your requirements
+            phone_pattern = r'^\+?[1-9]\d{1,14}$'
+            if not re.match(phone_pattern, value.replace(' ', '').replace('-', '')):
+                raise serializers.ValidationError("Please enter a valid phone number")
+        return value
+    
+    def validate(self, data):
+        """Ensure either email or phone is provided."""
+        email = data.get('email')
+        phone = data.get('phone')
+        
+        if not email and not phone:
+            raise serializers.ValidationError(
+                "Either email or phone number must be provided"
+            )
+        
+        if email and phone:
+            raise serializers.ValidationError(
+                "Please provide either email or phone number, not both"
+            )
+        
+        # Validate type-specific requirements
+        verification_type = data.get('type')
+        
+        if verification_type == 'phone_verification' and not phone:
+            raise serializers.ValidationError(
+                "Phone number is required for phone verification"
+            )
+        
+        if verification_type in ['registration', 'password_reset', 'email_verification'] and not email:
+            raise serializers.ValidationError(
+                f"Email is required for {verification_type.replace('_', ' ')}"
+            )
         
         return data
