@@ -19,20 +19,17 @@ from .serializers import (
     SignUpSerializer, LoginSerializer, ForgotPasswordSerializer,
     VerifyOTPSerializer, ResetPasswordSerializer, ResendOTPSerializer
 )
+from rest_framework.permissions import AllowAny
+from django.shortcuts import get_object_or_404
 from users.models import Profile
+from common.email_service import email_service
 
 logger = logging.getLogger(__name__)
 
 
 class SignUpView(APIView):
     """
-    Handle user registration with Supabase Auth + local Profile creation.
-    
-    Flow:
-    1. Validate input data
-    2. Create user in Supabase Auth
-    3. Create local Profile record
-    4. Send verification email
+    Enhanced signup view with Microsoft Graph email integration.
     """
     permission_classes = [AllowAny]
     
@@ -89,17 +86,26 @@ class SignUpView(APIView):
                 
             except Exception as e:
                 logger.error(f"Failed to create profile for user {user_id}: {str(e)}")
-                # Don't fail the signup, profile can be created later via webhook
+            
+            # Generate and send OTP via Microsoft Graph
+            otp_generated = self._generate_and_send_otp(
+                email=data['email'],
+                first_name=data['first_name']
+            )
+            
+            if not otp_generated:
+                logger.warning(f"Failed to send OTP to {data['email']}, but account was created")
             
             return Response({
                 'success': True,
-                'message': 'Account created successfully. Please check your email to verify your account.',
+                'message': 'Account created successfully. Please check your email for the verification code.',
                 'user': {
                     'id': user_id,
                     'email': data['email'],
                     'first_name': data['first_name'],
                     'last_name': data['last_name'],
-                }
+                },
+                'otp_sent': otp_generated
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
@@ -109,7 +115,44 @@ class SignUpView(APIView):
                 'error': 'SIGNUP_ERROR',
                 'message': 'An error occurred during signup. Please try again.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    
+    def _generate_and_send_otp(self, email: str, first_name: str) -> bool:
+        """Generate OTP and send via email service."""
+        try:
+            # Generate OTP using Supabase function
+            supabase_client = SupabaseClient()
+            response = supabase_client.service_client.rpc('generate_otp', {
+                'p_email': email,
+                'p_type': 'registration'
+            }).execute()
+            
+            if response.data:
+                # Extract OTP code
+                if isinstance(response.data, dict):
+                    otp_code = response.data.get('token') or response.data.get('otp')
+                else:
+                    otp_code = str(response.data)
+                
+                # Send via Microsoft Graph
+                success = email_service.send_otp(
+                    email=email,
+                    otp_code=otp_code,
+                    otp_type='registration',
+                    metadata={'name': first_name}
+                )
+                
+                if success:
+                    logger.info(f"Registration OTP sent to {email}")
+                    return True
+                else:
+                    logger.error(f"Failed to send registration OTP to {email}")
+                    return False
+            
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error generating/sending OTP: {str(e)}")
+            return False
 
 class LoginView(APIView):
     """
@@ -183,14 +226,9 @@ class LoginView(APIView):
                 'message': 'An error occurred during login. Please try again.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class ForgotPasswordView(APIView):
     """
-    Handle password reset request.
-    
-    Flow:
-    1. Validate email
-    2. Send reset email via Supabase
+    Enhanced forgot password view with Microsoft Graph email integration.
     """
     permission_classes = [AllowAny]
     
@@ -203,25 +241,87 @@ class ForgotPasswordView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         email = serializer.validated_data['email']
-        supabase_client = SupabaseClient()
         
         try:
-            # Send reset email via Supabase
-            result = supabase_client.send_password_reset_email(email)
+            # Check if user exists (optional - for better UX)
+            user_exists = self._check_user_exists(email)
+            
+            if user_exists:
+                # Generate and send password reset OTP
+                otp_sent = self._generate_and_send_reset_otp(email)
+                
+                if not otp_sent:
+                    logger.error(f"Failed to send password reset OTP to {email}")
             
             # Always return success to avoid email enumeration
             return Response({
                 'success': True,
-                'message': 'If this email exists in our system, you will receive password reset instructions.'
+                'message': 'If this email exists in our system, you will receive password reset instructions.',
+                'email': email
             })
             
         except Exception as e:
             logger.error(f"Password reset error: {str(e)}")
+            # Still return success for security
             return Response({
-                'success': True,  # Still return success for security
+                'success': True,
                 'message': 'If this email exists in our system, you will receive password reset instructions.'
             })
-
+    
+    def _check_user_exists(self, email: str) -> bool:
+        """Check if user exists."""
+        try:
+            from users.models import Profile
+            return Profile.objects.filter(email=email).exists()
+        except:
+            return False
+    
+    def _generate_and_send_reset_otp(self, email: str) -> bool:
+        """Generate and send password reset OTP."""
+        try:
+            # Get user metadata
+            metadata = {'name': 'User'}
+            try:
+                from users.models import Profile
+                profile = Profile.objects.get(email=email)
+                metadata['name'] = profile.first_name or 'User'
+            except:
+                pass
+            
+            # Generate OTP
+            supabase_client = SupabaseClient()
+            response = supabase_client.service_client.rpc('generate_otp', {
+                'p_email': email,
+                'p_type': 'password_reset'
+            }).execute()
+            
+            if response.data:
+                # Extract OTP code
+                if isinstance(response.data, dict):
+                    otp_code = response.data.get('token') or response.data.get('otp')
+                else:
+                    otp_code = str(response.data)
+                
+                # Send via Microsoft Graph
+                success = email_service.send_otp(
+                    email=email,
+                    otp_code=otp_code,
+                    otp_type='password_reset',
+                    metadata=metadata
+                )
+                
+                if success:
+                    logger.info(f"Password reset OTP sent to {email}")
+                    return True
+                else:
+                    logger.error(f"Failed to send password reset OTP to {email}")
+                    return False
+            
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error in password reset OTP: {str(e)}")
+            return False
 
 class ResetPasswordView(APIView):
     """
@@ -271,14 +371,9 @@ class ResetPasswordView(APIView):
                 'message': 'An error occurred while resetting your password. Please try again.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class VerifyOTPView(APIView):
     """
-    Handle OTP verification (for email/phone verification).
-    
-    Flow:
-    1. Validate OTP
-    2. Verify user account
+    Enhanced OTP verification with email notifications.
     """
     permission_classes = [AllowAny]
     
@@ -309,9 +404,14 @@ class VerifyOTPView(APIView):
                     'message': 'Invalid or expired verification code'
                 }, status=status.HTTP_400_BAD_REQUEST)
             
+            # If registration verification successful, send welcome email
+            if data.get('type') == 'registration' and data.get('email'):
+                self._send_welcome_email(data['email'])
+            
             return Response({
                 'success': True,
-                'message': 'Verification successful'
+                'message': 'Verification successful',
+                'user_id': result.get('user_id')
             })
             
         except Exception as e:
@@ -321,6 +421,25 @@ class VerifyOTPView(APIView):
                 'error': 'VERIFICATION_ERROR',
                 'message': 'An error occurred during verification. Please try again.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _send_welcome_email(self, email: str):
+        """Send welcome email after successful registration."""
+        try:
+            # Get user name
+            name = 'User'
+            try:
+                from users.models import Profile
+                profile = Profile.objects.get(email=email)
+                name = profile.first_name or 'User'
+            except:
+                pass
+            
+            # Send welcome email via email service
+            email_service.send_welcome_email(email, name)
+            logger.info(f"Welcome email sent to {email}")
+            
+        except Exception as e:
+            logger.error(f"Failed to send welcome email: {str(e)}")
 
 class HealthCheckView(APIView):
     """
@@ -360,7 +479,6 @@ class HealthCheckView(APIView):
         
         status_code = 200 if health_status['status'] == 'healthy' else 503
         return Response(health_status, status=status_code)
-
 
 class TokenRefreshView(APIView):
     """
@@ -409,7 +527,6 @@ class TokenRefreshView(APIView):
                 'error': 'REFRESH_ERROR',
                 'message': 'An error occurred while refreshing tokens'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class LogoutView(APIView):
     """
@@ -544,7 +661,6 @@ class SupabaseWebhookView(View):
         except Exception as e:
             logger.error(f"Error handling user deletion webhook: {str(e)}")
 
-
 class UserProfileView(APIView):
     """
     Get current user's profile information.
@@ -586,29 +702,22 @@ class UserProfileView(APIView):
             logger.error(f"Error fetching user profile: {str(e)}")
             return Response({
                 'error': 'Internal server error'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)      
 
 class ResendOTPView(APIView):
     """
-    Handle OTP resending for various verification scenarios.
+    Enhanced OTP resending view with Microsoft Graph email integration.
     
     Supports:
-    - Registration verification (signup OTP)
-    - Password reset verification (forgot password OTP) 
-    - Email verification (general email OTP)
-    - Phone verification (general phone OTP)
-    
-    Flow:
-    1. Validate input (email or phone + type)
-    2. Check rate limiting (prevent spam)
-    3. Generate new OTP using custom Supabase function
-    4. Send OTP via email/SMS
-    5. Return success response
+    - Registration verification
+    - Password reset verification
+    - Email verification
+    - Phone verification (SMS - future implementation)
     """
-    permission_classes = [AllowAny]
+    permission_classes = []  # Public endpoint
     
     def post(self, request):
+        """Handle OTP resend request."""
         serializer = ResendOTPSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({
@@ -617,48 +726,46 @@ class ResendOTPView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         data = serializer.validated_data
-        supabase_client = SupabaseClient()
         
         try:
             # Check if user exists (for registration type)
             if data['type'] == 'registration':
-                # For registration, user must exist in auth.users
-                user_exists = self._check_user_exists(data.get('email'))
-                if not user_exists:
+                if not self._check_user_exists(data.get('email')):
                     return Response({
                         'success': False,
                         'error': 'USER_NOT_FOUND',
                         'message': 'No account found with this email address.'
                     }, status=status.HTTP_404_NOT_FOUND)
             
-            # Check rate limiting (max 3 requests per 5 minutes)
+            # Check rate limiting
             if self._is_rate_limited(data.get('email'), data.get('phone')):
                 return Response({
                     'success': False,
-                    'error': 'RATE_LIMITED', 
-                    'message': 'Too many requests. Please wait before requesting another code.'
+                    'error': 'RATE_LIMITED',
+                    'message': 'Too many requests. Please wait 5 minutes before requesting another code.'
                 }, status=status.HTTP_429_TOO_MANY_REQUESTS)
             
-            # Generate new OTP
-            result = supabase_client.generate_otp(
+            # Generate OTP
+            otp_result = self._generate_otp(
                 email=data.get('email'),
                 phone=data.get('phone'),
                 type=data['type']
             )
             
-            otp = result.get('otp') if isinstance(result, dict) else None
-            if not otp or not isinstance(otp, str):
+            if not otp_result or not otp_result.get('success'):
                 return Response({
                     'success': False,
                     'error': 'OTP_GENERATION_FAILED',
                     'message': 'Failed to generate verification code. Please try again.'
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
+            otp_code = otp_result.get('otp')
+            
             # Send OTP via email or SMS
             if data.get('email'):
-                sent = self._send_email_otp(data['email'], otp, data['type'])
+                sent = self._send_email_otp(data['email'], otp_code, data['type'])
             elif data.get('phone'):
-                sent = self._send_sms_otp(data['phone'], otp, data['type'])
+                sent = self._send_sms_otp(data['phone'], otp_code, data['type'])
             else:
                 sent = False
             
@@ -666,15 +773,14 @@ class ResendOTPView(APIView):
                 return Response({
                     'success': False,
                     'error': 'DELIVERY_FAILED',
-                    'message': 'Failed to send verification code. Please try again.'
+                    'message': 'Failed to send verification code. Please check your email address and try again.'
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-            # Log the resend attempt
-            logger.info(f"OTP resent successfully - Type: {data['type']}, Email: {data.get('email')}, Phone: {data.get('phone')}")
+            logger.info(f"OTP resent successfully - Type: {data['type']}, Email: {data.get('email')}")
             
             return Response({
                 'success': True,
-                'message': 'Verification code sent successfully.',
+                'message': 'Verification code sent successfully. Please check your email.',
                 'type': data['type'],
                 'sent_to': data.get('email') or data.get('phone'),
                 'expires_in': 600  # 10 minutes
@@ -685,25 +791,31 @@ class ResendOTPView(APIView):
             return Response({
                 'success': False,
                 'error': 'RESEND_ERROR',
-                'message': 'An error occurred while resending verification code. Please try again.'
+                'message': 'An error occurred while sending verification code. Please try again.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def _check_user_exists(self, email: str) -> bool:
-        """Check if user exists in Supabase auth.users table."""
+        """Check if user exists in Supabase or local database."""
         try:
-            supabase_client = SupabaseClient()
-            response = supabase_client.service_client.auth.admin.get_user_by_email(email)
-            return response.user is not None
-        except Exception:
-            return False
+            from users.models import Profile
+            return Profile.objects.filter(email=email).exists()
+        except Exception as e:
+            logger.error(f"Error checking user existence: {str(e)}")
+            
+            # Fallback to Supabase check
+            try:
+                from .supabase_client import SupabaseClient
+                client = SupabaseClient()
+                response = client.service_client.auth.admin.get_user_by_email(email)
+                return response.user is not None
+            except:
+                return False
     
     def _is_rate_limited(self, email: str = None, phone: str = None) -> bool:
         """
         Check if user is rate limited for OTP requests.
-        Simple rate limiting: max 3 requests per 5 minutes per email/phone.
+        Limit: max 3 requests per 5 minutes per email/phone.
         """
-        from django.core.cache import cache
-        
         key = f"otp_resend_{email or phone}"
         current_count = cache.get(key, 0)
         
@@ -714,109 +826,436 @@ class ResendOTPView(APIView):
         cache.set(key, current_count + 1, 300)  # 300 seconds = 5 minutes
         return False
     
-    def _send_email_otp(self, email: str, otp: str, otp_type: str) -> bool:
-        """
-        Send OTP via email using your preferred email service.
-        This is a placeholder - implement with your email provider.
-        """
+    def _generate_otp(self, email: str = None, phone: str = None, type: str = "registration") -> Dict:
+        """Generate OTP using Supabase function."""
         try:
-            # Get email template based on type
-            subject, template = self._get_email_template(otp_type)
+            from .supabase_client import SupabaseClient
+            client = SupabaseClient()
             
-            # Replace template variables
-            html_content = template.format(
-                otp=otp,
-                email=email,
-                expires_in="10 minutes"
-            )
+            response = client.service_client.rpc('generate_otp', {
+                'p_email': email,
+                'p_phone': phone,
+                'p_type': type
+            }).execute()
             
-            # TODO: Implement actual email sending
-            # Example with SendGrid, AWS SES, or Django email backend
-            from django.core.mail import send_mail
+            if response.data:
+                # Handle both direct OTP return and object return
+                if isinstance(response.data, str):
+                    return {'success': True, 'otp': response.data}
+                elif isinstance(response.data, dict):
+                    return response.data
+                else:
+                    # If it's a different format, try to extract the OTP
+                    return {'success': True, 'otp': str(response.data)}
             
-            send_mail(
-                subject=subject,
-                message=f"Your verification code is: {otp}",
-                from_email='noreply@pefoma.com',
-                recipient_list=[email],
-                html_message=html_content
-            )
-            
-            logger.info(f"OTP email sent to {email}")
-            return True
+            return {'success': False}
             
         except Exception as e:
-            logger.error(f"Failed to send OTP email to {email}: {str(e)}")
-            return False
+            logger.error(f"Error generating OTP: {str(e)}")
+            return {'success': False}
     
-    def _send_sms_otp(self, phone: str, otp: str, otp_type: str) -> bool:
+    def _send_email_otp(self, email: str, otp_code: str, otp_type: str) -> bool:
         """
-        Send OTP via SMS using your preferred SMS service.
-        This is a placeholder - implement with Twilio, AWS SNS, etc.
-        """
-        try:
-            message = f"Your Pefoma verification code is: {otp}. Valid for 10 minutes."
-            
-            # TODO: Implement actual SMS sending
-            # Example with Twilio
-            # client = Client(account_sid, auth_token)
-            # message = client.messages.create(
-            #     body=message,
-            #     from_='+1234567890',
-            #     to=phone
-            # )
-            
-            logger.info(f"OTP SMS sent to {phone}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to send OTP SMS to {phone}: {str(e)}")
-            return False
-    
-    def _get_email_template(self, otp_type: str) -> tuple:
-        """Get email subject and HTML template based on OTP type."""
-        templates = {
-            'registration': (
-                'Verify Your Pefoma Account',
-                '''
-                <html>
-                <body>
-                    <h2>Welcome to Pefoma!</h2>
-                    <p>Please use the following verification code to complete your account setup:</p>
-                    <h3 style="color: #2563eb; font-size: 32px; letter-spacing: 8px;">{otp}</h3>
-                    <p>This code will expire in {expires_in}.</p>
-                    <p>If you didn't create an account, please ignore this email.</p>
-                </body>
-                </html>
-                '''
-            ),
-            'password_reset': (
-                'Reset Your Pefoma Password',
-                '''
-                <html>
-                <body>
-                    <h2>Password Reset Request</h2>
-                    <p>Please use the following verification code to reset your password:</p>
-                    <h3 style="color: #dc2626; font-size: 32px; letter-spacing: 8px;">{otp}</h3>
-                    <p>This code will expire in {expires_in}.</p>
-                    <p>If you didn't request this reset, please ignore this email.</p>
-                </body>
-                </html>
-                '''
-            ),
-            'email_verification': (
-                'Verify Your Email Address',
-                '''
-                <html>
-                <body>
-                    <h2>Email Verification</h2>
-                    <p>Please use the following verification code:</p>
-                    <h3 style="color: #059669; font-size: 32px; letter-spacing: 8px;">{otp}</h3>
-                    <p>This code will expire in {expires_in}.</p>
-                </body>
-                </html>
-                '''
-            )
-        }
+        Send OTP via Microsoft Graph email service.
         
-        return templates.get(otp_type, templates['email_verification'])
+        Args:
+            email: Recipient email
+            otp_code: Generated OTP code
+            otp_type: Type of OTP (registration, password_reset, etc.)
+        
+        Returns:
+            True if email sent successfully
+        """
+        try:
+            # Get user metadata for personalization
+            metadata = self._get_user_metadata(email)
+            
+            # Send using the email service
+            success = email_service.send_otp(
+                email=email,
+                otp_code=otp_code,
+                otp_type=otp_type,
+                metadata=metadata
+            )
+            
+            if success:
+                logger.info(f"OTP email sent successfully to {email} via Microsoft Graph")
+                
+                # Log for analytics
+                self._log_email_sent(email, otp_type, 'success')
+            else:
+                logger.error(f"Failed to send OTP email to {email}")
+                self._log_email_sent(email, otp_type, 'failed')
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"Error in _send_email_otp: {str(e)}")
+            self._log_email_sent(email, otp_type, 'error', str(e))
+            return False
+    
+    def _send_sms_otp(self, phone: str, otp_code: str, otp_type: str) -> bool:
+        """
+        Send OTP via SMS (placeholder for future implementation).
+        
+        Args:
+            phone: Recipient phone number
+            otp_code: Generated OTP code
+            otp_type: Type of OTP
+        
+        Returns:
+            True if SMS sent successfully
+        """
+        # TODO: Implement SMS sending via Twilio or similar service
+        logger.warning(f"SMS OTP not implemented yet. Would send {otp_code} to {phone}")
+        return False
+    
+    def _get_user_metadata(self, email: str) -> Dict[str, Any]:
+        """Get user metadata for email personalization."""
+        metadata = {}
+        
+        try:
+            from users.models import Profile
+            profile = Profile.objects.get(email=email)
+            metadata['name'] = profile.first_name or 'User'
+            metadata['user_id'] = str(profile.id)
+            metadata['company'] = profile.company
+        except:
+            metadata['name'] = 'User'
+        
+        return metadata
+    
+    def _log_email_sent(self, email: str, otp_type: str, status: str, error: str = None):
+        """Log email sending for analytics and debugging."""
+        try:
+            # You can implement email logging here
+            # For now, just log to file
+            log_data = {
+                'email': email,
+                'otp_type': otp_type,
+                'status': status,
+                'error': error,
+                'timestamp': str(timezone.now())
+            }
+            
+            if status == 'success':
+                logger.info(f"Email log: {log_data}")
+            else:
+                logger.error(f"Email log: {log_data}")
+                
+        except Exception as e:
+            logger.error(f"Failed to log email: {str(e)}")
+
+class TestEmailView(APIView):
+    """Test endpoint for email functionality (development only)."""
+    
+    permission_classes = []
+    
+    def post(self, request):
+        """Send a test email."""
+        if not settings.DEBUG:
+            return Response({
+                'error': 'This endpoint is only available in DEBUG mode'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        email = request.data.get('email')
+        email_type = request.data.get('type', 'test')
+        
+        if not email:
+            return Response({
+                'error': 'Email address required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            if email_type == 'otp':
+                # Test OTP email
+                success = email_service.send_otp(
+                    email=email,
+                    otp_code='123456',
+                    otp_type='registration',
+                    metadata={'name': 'Test User'}
+                )
+            elif email_type == 'welcome':
+                # Test welcome email
+                success = email_service.send_welcome_email(
+                    email=email,
+                    name='Test User'
+                )
+            else:
+                # Test generic email
+                success = email_service.send_transactional(
+                    email=email,
+                    subject='Test Email from Pefoma',
+                    html_content='<h2>This is a test email</h2><p>If you received this, the email system is working!</p>'
+                )
+            
+            if success:
+                return Response({
+                    'success': True,
+                    'message': f'Test {email_type} email sent to {email}'
+                })
+            else:
+                return Response({
+                    'success': False,
+                    'message': 'Failed to send test email'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
+        except Exception as e:
+            return Response({
+                'success': False,
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class VerifyResetTokenView(APIView):
+    """
+    Verify if a password reset token is valid.
+    This endpoint is called before showing the reset password form.
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        token = request.data.get('token')
+        if not token:
+            return Response({
+                'valid': False,
+                'message': 'Token is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            supabase_client = SupabaseClient()
+            
+            # You might need to implement this method in your SupabaseClient
+            # or use Supabase's token verification
+            result = supabase_client.verify_reset_token(token)
+            
+            return Response({
+                'valid': result.get('success', False),
+                'message': result.get('message', 'Token verification completed')
+            })
+            
+        except Exception as e:
+            logger.error(f"Token verification error: {str(e)}")
+            return Response({
+                'valid': False,
+                'message': 'Token verification failed'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class DeleteUserView(APIView):
+    """
+    Delete a user from both Django and Supabase.
+    This endpoint should be used carefully and ideally restricted to admin users.
+    """
+    permission_classes = [AllowAny]  # Change to [IsAdminUser] for production
+    
+    def delete(self, request, user_id=None):
+        """
+        Delete a user by ID or email.
+        
+        Usage:
+        DELETE /auth/users/delete/
+        Body: {"email": "user@example.com"} OR {"user_id": "uuid"}
+        
+        Or:
+        DELETE /auth/users/delete/{user_id}/
+        """
+        try:
+            # Get user identifier from URL parameter or request body
+            if not user_id:
+                user_id = request.data.get('user_id')
+                email = request.data.get('email')
+                
+                if not user_id and not email:
+                    return Response({
+                        'success': False,
+                        'error': 'USER_ID_OR_EMAIL_REQUIRED',
+                        'message': 'Either user_id or email must be provided'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Find user by email if user_id not provided
+                if email and not user_id:
+                    try:
+                        profile = Profile.objects.get(email=email)
+                        user_id = str(profile.id)
+                    except Profile.DoesNotExist:
+                        return Response({
+                            'success': False,
+                            'error': 'USER_NOT_FOUND',
+                            'message': f'No user found with email: {email}'
+                        }, status=status.HTTP_404_NOT_FOUND)
+            
+            # Get the profile to delete
+            profile = get_object_or_404(Profile, id=user_id)
+            user_email = profile.email
+            
+            logger.info(f"Attempting to delete user: {user_id} ({user_email})")
+            
+            # Delete from Supabase first
+            supabase_client = SupabaseClient()
+            supabase_deleted = self._delete_from_supabase(supabase_client, user_id)
+            
+            # Delete from Django (this will cascade delete related data)
+            profile.delete()
+            logger.info(f"Successfully deleted user from Django: {user_id}")
+            
+            return Response({
+                'success': True,
+                'message': f'User {user_email} deleted successfully',
+                'user_id': user_id,
+                'deleted_from_supabase': supabase_deleted
+            }, status=status.HTTP_200_OK)
+            
+        except Profile.DoesNotExist:
+            return Response({
+                'success': False,
+                'error': 'USER_NOT_FOUND',
+                'message': f'No user found with ID: {user_id}'
+            }, status=status.HTTP_404_NOT_FOUND)
+            
+        except Exception as e:
+            logger.error(f"Error deleting user {user_id}: {str(e)}")
+            return Response({
+                'success': False,
+                'error': 'DELETION_ERROR',
+                'message': 'An error occurred while deleting the user'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _delete_from_supabase(self, supabase_client, user_id):
+        """Delete user from Supabase auth."""
+        try:
+            # Use admin client to delete user
+            response = supabase_client.service_client.auth.admin.delete_user(user_id)
+            logger.info(f"Successfully deleted user from Supabase: {user_id}")
+            return True
+        except Exception as e:
+            logger.warning(f"Failed to delete user from Supabase {user_id}: {str(e)}")
+            # Don't fail the whole operation if Supabase deletion fails
+            return False
+
+class ListUsersView(APIView):
+    """
+    List all users for admin purposes.
+    Helpful for seeing which users exist before deletion.
+    """
+    permission_classes = [AllowAny]  # Change to [IsAdminUser] for production
+    
+    def get(self, request):
+        """List all users with basic info."""
+        try:
+            profiles = Profile.objects.all().order_by('-created_at')
+            
+            users_data = []
+            for profile in profiles:
+                users_data.append({
+                    'id': str(profile.id),
+                    'email': profile.email,
+                    'full_name': profile.full_name,
+                    'company': profile.company,
+                    'is_verified': profile.is_verified,
+                    'created_at': profile.created_at.isoformat(),
+                    'last_login': profile.last_login.isoformat() if profile.last_login else None,
+                })
+            
+            return Response({
+                'success': True,
+                'users': users_data,
+                'total_count': len(users_data)
+            })
+            
+        except Exception as e:
+            logger.error(f"Error listing users: {str(e)}")
+            return Response({
+                'success': False,
+                'error': 'LIST_ERROR',
+                'message': 'An error occurred while listing users'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class BulkDeleteUsersView(APIView):
+    """
+    Delete multiple users at once.
+    Useful for cleaning up test data.
+    """
+    permission_classes = [AllowAny]  # Change to [IsAdminUser] for production
+    
+    def post(self, request):
+        """
+        Delete multiple users by email or ID.
+        
+        Body: {
+            "emails": ["user1@example.com", "user2@example.com"],
+            "user_ids": ["uuid1", "uuid2"],
+            "confirm": true
+        }
+        """
+        try:
+            emails = request.data.get('emails', [])
+            user_ids = request.data.get('user_ids', [])
+            confirm = request.data.get('confirm', False)
+            
+            if not confirm:
+                return Response({
+                    'success': False,
+                    'error': 'CONFIRMATION_REQUIRED',
+                    'message': 'Set "confirm": true to proceed with bulk deletion'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            if not emails and not user_ids:
+                return Response({
+                    'success': False,
+                    'error': 'NO_USERS_SPECIFIED',
+                    'message': 'Provide either emails or user_ids array'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            deleted_users = []
+            failed_deletions = []
+            
+            # Delete users by email
+            for email in emails:
+                try:
+                    profile = Profile.objects.get(email=email)
+                    self._delete_single_user(profile)
+                    deleted_users.append({'email': email, 'id': str(profile.id)})
+                except Profile.DoesNotExist:
+                    failed_deletions.append({'email': email, 'reason': 'User not found'})
+                except Exception as e:
+                    failed_deletions.append({'email': email, 'reason': str(e)})
+            
+            # Delete users by ID
+            for user_id in user_ids:
+                try:
+                    profile = Profile.objects.get(id=user_id)
+                    self._delete_single_user(profile)
+                    deleted_users.append({'email': profile.email, 'id': user_id})
+                except Profile.DoesNotExist:
+                    failed_deletions.append({'user_id': user_id, 'reason': 'User not found'})
+                except Exception as e:
+                    failed_deletions.append({'user_id': user_id, 'reason': str(e)})
+            
+            return Response({
+                'success': True,
+                'message': f'Bulk deletion completed. {len(deleted_users)} users deleted, {len(failed_deletions)} failed',
+                'deleted_users': deleted_users,
+                'failed_deletions': failed_deletions
+            })
+            
+        except Exception as e:
+            logger.error(f"Error in bulk user deletion: {str(e)}")
+            return Response({
+                'success': False,
+                'error': 'BULK_DELETION_ERROR',
+                'message': 'An error occurred during bulk deletion'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _delete_single_user(self, profile):
+        """Helper method to delete a single user."""
+        user_id = str(profile.id)
+        
+        # Try to delete from Supabase
+        try:
+            supabase_client = SupabaseClient()
+            supabase_client.service_client.auth.admin.delete_user(user_id)
+        except Exception as e:
+            logger.warning(f"Failed to delete user from Supabase {user_id}: {str(e)}")
+        
+        # Delete from Django
+        profile.delete()
+        logger.info(f"Deleted user: {profile.email} ({user_id})")

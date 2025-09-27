@@ -1,0 +1,217 @@
+"""
+Unified email service for Pefoma using Microsoft Graph API.
+Handles OTP emails, transactional emails, and future email needs.
+"""
+
+from typing import Dict, Any, Optional
+from django.conf import settings
+import logging
+from abc import ABC, abstractmethod
+
+logger = logging.getLogger(__name__)
+
+
+class BaseEmailProvider(ABC):
+    """Abstract base class for email providers."""
+    
+    @abstractmethod
+    def send_otp(self, email: str, otp_code: str, otp_type: str, 
+                 metadata: Dict[str, Any] = None) -> bool:
+        """Send OTP via email."""
+        pass
+    
+    @abstractmethod
+    def send_transactional(self, email: str, subject: str, 
+                          html_content: str, metadata: Dict[str, Any] = None) -> bool:
+        """Send transactional email."""
+        pass
+
+
+class MicrosoftGraphAdapter(BaseEmailProvider):
+    """Adapter for Microsoft Graph email provider."""
+    
+    def __init__(self):
+        from common.microsoft_graph_email import MicrosoftGraphEmailProvider
+        self.provider = MicrosoftGraphEmailProvider()
+        logger.info("Initialized Microsoft Graph email provider")
+    
+    def send_otp(self, email: str, otp_code: str, otp_type: str, 
+                 metadata: Dict[str, Any] = None) -> bool:
+        """Send OTP email via Microsoft Graph."""
+        try:
+            # Add user name if available
+            if metadata is None:
+                metadata = {}
+            
+            # Try to get user name from database if not provided
+            if 'name' not in metadata:
+                try:
+                    from users.models import Profile
+                    profile = Profile.objects.get(email=email)
+                    metadata['name'] = profile.first_name or 'User'
+                except:
+                    metadata['name'] = 'User'
+            
+            success = self.provider.send_otp(
+                email=email,
+                otp_code=otp_code,
+                otp_type=otp_type,
+                metadata=metadata
+            )
+            
+            if success:
+                logger.info(f"OTP email sent successfully to {email} - Type: {otp_type}")
+            else:
+                logger.error(f"Failed to send OTP email to {email}")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"Error sending OTP email via Microsoft Graph: {str(e)}")
+            return False
+    
+    def send_transactional(self, email: str, subject: str, 
+                          html_content: str, metadata: Dict[str, Any] = None) -> bool:
+        """Send transactional email via Microsoft Graph."""
+        try:
+            return self.provider.send_email(
+                to_email=email,
+                subject=subject,
+                html_content=html_content,
+                importance="normal"
+            )
+        except Exception as e:
+            logger.error(f"Error sending transactional email: {str(e)}")
+            return False
+
+
+class SupabaseEmailAdapter(BaseEmailProvider):
+    """Fallback adapter for Supabase (during transition)."""
+    
+    def __init__(self):
+        logger.info("Initialized Supabase email provider (fallback)")
+    
+    def send_otp(self, email: str, otp_code: str, otp_type: str, 
+                 metadata: Dict[str, Any] = None) -> bool:
+        """Send OTP via Supabase (fallback implementation)."""
+        # This is a fallback - implement if needed
+        logger.warning("Using Supabase fallback for OTP email")
+        return False
+    
+    def send_transactional(self, email: str, subject: str, 
+                          html_content: str, metadata: Dict[str, Any] = None) -> bool:
+        """Send transactional email via Supabase (fallback)."""
+        logger.warning("Using Supabase fallback for transactional email")
+        return False
+
+
+class EmailService:
+    """
+    Main email service facade for the entire application.
+    This is what all parts of the application should use.
+    """
+    
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
+    def __init__(self):
+        if not self._initialized:
+            self.provider = self._get_provider()
+            self._initialized = True
+    
+    def _get_provider(self) -> BaseEmailProvider:
+        """Get email provider based on settings."""
+        provider_type = getattr(settings, 'EMAIL_PROVIDER', 'microsoft_graph')
+        
+        logger.info(f"Initializing email service with provider: {provider_type}")
+        
+        if provider_type in ['microsoft', 'microsoft_graph']:
+            return MicrosoftGraphAdapter()
+        elif provider_type == 'supabase':
+            return SupabaseEmailAdapter()
+        else:
+            # Default to Microsoft Graph
+            logger.warning(f"Unknown provider {provider_type}, defaulting to Microsoft Graph")
+            return MicrosoftGraphAdapter()
+    
+    def send_otp(self, email: str, otp_code: str, otp_type: str, 
+                 metadata: Dict[str, Any] = None) -> bool:
+        """
+        Send OTP email.
+        
+        Args:
+            email: Recipient email address
+            otp_code: 6-digit OTP code
+            otp_type: Type of OTP ('registration', 'password_reset', 'login', 'email_verification')
+            metadata: Additional data for the template (e.g., user name)
+        
+        Returns:
+            True if email sent successfully
+        """
+        return self.provider.send_otp(email, otp_code, otp_type, metadata)
+    
+    def send_transactional(self, email: str, subject: str, 
+                          html_content: str, metadata: Dict[str, Any] = None) -> bool:
+        """
+        Send transactional email.
+        
+        Args:
+            email: Recipient email address
+            subject: Email subject
+            html_content: HTML content of the email
+            metadata: Additional metadata
+        
+        Returns:
+            True if email sent successfully
+        """
+        return self.provider.send_transactional(email, subject, html_content, metadata)
+    
+    def send_welcome_email(self, email: str, name: str) -> bool:
+        """Send welcome email after successful registration."""
+        html_content = f"""
+        <html>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2>Welcome to Pefoma, {name}! 🎉</h2>
+                <p>Your account has been successfully verified.</p>
+                <p>You can now start using our AI-powered inventory management platform.</p>
+                <div style="margin: 30px 0;">
+                    <a href="https://pefoma.com/dashboard" 
+                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                              color: white; padding: 14px 32px; text-decoration: none;
+                              border-radius: 50px; display: inline-block;">
+                        Go to Dashboard
+                    </a>
+                </div>
+                <p>If you have any questions, feel free to reach out to our support team.</p>
+                <p>Best regards,<br>The Pefoma Team</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return self.send_transactional(
+            email=email,
+            subject="Welcome to Pefoma! 🎉",
+            html_content=html_content
+        )
+    
+    def switch_provider(self, provider_type: str):
+        """
+        Switch email provider at runtime (useful for testing or failover).
+        
+        Args:
+            provider_type: 'microsoft_graph' or 'supabase'
+        """
+        settings.EMAIL_PROVIDER = provider_type
+        self.provider = self._get_provider()
+        logger.info(f"Switched email provider to: {provider_type}")
+
+
+# Singleton instance - use this throughout the application
+email_service = EmailService()

@@ -31,16 +31,31 @@ DJANGO_REFRESH_TOKEN_TTL_DAYS = env.int('DJANGO_REFRESH_TOKEN_TTL_DAYS', default
 # Email Provider: 'supabase', 'sendgrid', 'aws', 'django'
 EMAIL_PROVIDER = env('EMAIL_PROVIDER', default='supabase')
 
-# SendGrid Configuration (for future use)
-SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
-SENDGRID_FROM_EMAIL = env('SENDGRID_FROM_EMAIL', default='noreply@pefoma.com')
-SENDGRID_FROM_NAME = env('SENDGRID_FROM_NAME', default='Pefoma')
+# Microsoft Graph API Configuration
+EMAIL_PROVIDER = env('EMAIL_PROVIDER', default='microsoft_graph')
 
-# AWS SES Configuration (for future use)
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', default='')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', default='')
-AWS_SES_REGION = env('AWS_SES_REGION', default='us-east-1')
-AWS_SES_FROM_EMAIL = env('AWS_SES_FROM_EMAIL', default='noreply@pefoma.com')
+MICROSOFT_TENANT_ID = env('MICROSOFT_TENANT_ID')
+MICROSOFT_CLIENT_ID = env('MICROSOFT_CLIENT_ID')
+MICROSOFT_CLIENT_SECRET = env('MICROSOFT_CLIENT_SECRET')
+MICROSOFT_SENDER_EMAIL = env('MICROSOFT_SENDER_EMAIL')
+MICROSOFT_SENDER_NAME = env('MICROSOFT_SENDER_NAME', default='Pefoma')
+
+# Optional test configuration
+MICROSOFT_TEST_EMAIL = env('MICROSOFT_TEST_EMAIL', default='')
+
+# Email rate limiting (messages per minute)
+EMAIL_RATE_LIMIT = env.int('EMAIL_RATE_LIMIT', default=30)
+
+# Update the email service integration
+if EMAIL_PROVIDER == 'microsoft_graph':
+    # Ensure required Microsoft settings are present
+    if not all([MICROSOFT_TENANT_ID, MICROSOFT_CLIENT_ID, 
+                MICROSOFT_CLIENT_SECRET, MICROSOFT_SENDER_EMAIL]):
+        raise ImproperlyConfigured(
+            "Microsoft Graph email provider requires all MICROSOFT_* settings"
+        )
+
+
 
 # Twilio Configuration (for SMS OTP - future use)
 TWILIO_ACCOUNT_SID = env('TWILIO_ACCOUNT_SID', default='')
@@ -119,6 +134,7 @@ INSTALLED_APPS = [
     'auth_integration',
     'users',
     'api',
+    'common'
 ]
 
 MIDDLEWARE = [
@@ -183,14 +199,39 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-# CORS Configuration
+# CORS Configuration for Development
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React dev server
+    "http://127.0.0.1:3000",  # Alternative localhost
     "https://pefoma-web.vercel.app",  # Production frontend
+    # Add your production domain here
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# Allow specific headers that your frontend sends
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# Allow specific methods
+CORS_ALLOWED_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
@@ -284,20 +325,16 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'microsoft_graph' : {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        }
     },
 }
 
 # Create logs directory
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
-
-# Email Configuration (for fallback notifications)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = env('EMAIL_PORT', default=587)
-EMAIL_USE_TLS = env('EMAIL_USE_TLS', default=True)
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@pefoma.com')
 
 # Cache Configuration
 CACHES = {

@@ -550,3 +550,53 @@ INFO 2025-09-24 16:41:39,633 autoreload 51184 28668 C:\Users\aliba\Documents\Hes
 INFO 2025-09-24 16:41:41,787 autoreload 40852 36380 Watching for file changes with StatReloader
 INFO 2025-09-24 16:41:46,781 autoreload 40852 36380 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\supabase_client.py changed, reloading.
 INFO 2025-09-24 16:41:48,643 autoreload 25760 51640 Watching for file changes with StatReloader
+INFO 2025-09-24 17:30:34,678 autoreload 51648 47580 Watching for file changes with StatReloader
+INFO 2025-09-24 18:17:16,185 basehttp 51648 30200 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+INFO 2025-09-24 18:17:22,117 _client 51648 30200 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-09-24 18:17:23,664 basehttp 51648 30200 "POST /auth/signup/ HTTP/1.1" 201 232
+INFO 2025-09-24 18:18:24,078 basehttp 51648 30200 "OPTIONS /auth/login/ HTTP/1.1" 200 0
+INFO 2025-09-24 18:18:28,151 _client 51648 30200 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=password "HTTP/1.1 400 Bad Request"
+WARNING 2025-09-24 18:18:28,157 log 51648 30200 Unauthorized: /auth/login/
+WARNING 2025-09-24 18:18:28,160 basehttp 51648 30200 "POST /auth/login/ HTTP/1.1" 401 85
+INFO 2025-09-24 18:25:32,066 basehttp 51648 42792 "OPTIONS /auth/forgot-password/ HTTP/1.1" 200 0
+INFO 2025-09-24 18:25:37,951 _client 51648 42792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/recover "HTTP/1.1 200 OK"
+INFO 2025-09-24 18:25:37,959 basehttp 51648 42792 "POST /auth/forgot-password/ HTTP/1.1" 200 110
+INFO 2025-09-24 18:42:11,622 autoreload 51648 47580 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-24 18:42:13,817 autoreload 52320 43704 Watching for file changes with StatReloader
+INFO 2025-09-24 18:42:54,524 autoreload 52320 43704 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-24 18:42:56,617 autoreload 35312 47684 Watching for file changes with StatReloader
+INFO 2025-09-24 18:43:42,054 autoreload 35312 47684 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-24 18:43:43,731 autoreload 35736 36536 Watching for file changes with StatReloader
+INFO 2025-09-24 18:44:40,232 autoreload 35736 36536 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-24 18:44:41,960 autoreload 1736 23556 Watching for file changes with StatReloader
+INFO 2025-09-24 18:44:54,712 autoreload 1736 23556 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-24 18:44:56,363 autoreload 51340 41276 Watching for file changes with StatReloader
+INFO 2025-09-24 18:53:37,580 autoreload 51340 41276 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-24 18:53:39,352 autoreload 18740 38088 Watching for file changes with StatReloader
+INFO 2025-09-24 18:53:50,495 autoreload 18740 38088 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-24 18:53:52,145 autoreload 51720 47472 Watching for file changes with StatReloader
+INFO 2025-09-24 18:54:00,315 autoreload 51720 47472 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-24 18:54:01,967 autoreload 14904 38956 Watching for file changes with StatReloader
+INFO 2025-09-24 18:54:07,965 autoreload 14904 38956 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-24 18:54:09,617 autoreload 42332 46532 Watching for file changes with StatReloader
+INFO 2025-09-24 18:54:20,363 autoreload 28848 51932 Watching for file changes with StatReloader
+WARNING 2025-09-24 20:05:08,858 log 28848 52664 Bad Request: /auth/users/delete/
+WARNING 2025-09-24 20:05:08,865 basehttp 28848 52664 "DELETE /auth/users/delete/?userId=062fa5f3-f306-4f88-bf19-f1206790c965 HTTP/1.1" 400 106
+INFO 2025-09-24 21:09:03,072 basehttp 28848 44004 "DELETE /auth/users/delete/decb9875-4283-4f88-991a-a519ade54bb3 HTTP/1.1" 301 0
+WARNING 2025-09-24 21:09:03,087 log 28848 6984 Method Not Allowed: /auth/users/delete/decb9875-4283-4f88-991a-a519ade54bb3/
+WARNING 2025-09-24 21:09:03,090 basehttp 28848 6984 "GET /auth/users/delete/decb9875-4283-4f88-991a-a519ade54bb3/ HTTP/1.1" 405 40
+INFO 2025-09-24 21:13:22,899 _client 28848 23536 HTTP Request: DELETE https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users/4c236c2e-3302-4c5d-97a1-7130b1e62d70 "HTTP/1.1 200 OK"
+INFO 2025-09-24 21:13:23,083 basehttp 28848 23536 "DELETE /auth/users/delete/ HTTP/1.1" 200 155
+INFO 2025-09-24 21:14:01,502 _client 28848 23536 HTTP Request: DELETE https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users/decb9875-4283-4f88-991a-a519ade54bb3 "HTTP/1.1 200 OK"
+INFO 2025-09-24 21:14:01,835 basehttp 28848 23536 "DELETE /auth/users/delete/ HTTP/1.1" 200 151
+INFO 2025-09-24 21:14:56,691 _client 28848 23536 HTTP Request: DELETE https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users/062fa5f3-f306-4f88-bf19-f1206790c965 "HTTP/1.1 200 OK"
+INFO 2025-09-24 21:14:56,868 basehttp 28848 23536 "DELETE /auth/users/delete/ HTTP/1.1" 200 159
+INFO 2025-09-24 21:15:18,851 _client 28848 23536 HTTP Request: DELETE https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users/c4bd4050-0ebf-4bd6-a70f-e0d27859745e "HTTP/1.1 200 OK"
+INFO 2025-09-24 21:15:19,034 basehttp 28848 23536 "DELETE /auth/users/delete/ HTTP/1.1" 200 156
+INFO 2025-09-24 21:15:36,107 _client 28848 23536 HTTP Request: DELETE https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users/4b1f911f-3d88-409a-881c-756f5384b435 "HTTP/1.1 200 OK"
+INFO 2025-09-24 21:15:36,282 basehttp 28848 23536 "DELETE /auth/users/delete/ HTTP/1.1" 200 155
+INFO 2025-09-26 18:42:08,803 microsoft_graph_email 33808 51972 Acquiring new Microsoft Graph token
+INFO 2025-09-26 18:42:10,653 microsoft_graph_email 33808 51972 Microsoft Graph token acquired, cached for 3299 seconds
+ERROR 2025-09-26 18:42:12,695 microsoft_graph_email 33808 51972 Connection test failed: 403 - {"error":{"code":"Authorization_RequestDenied","message":"Insufficient privileges to complete the operation.","innerError":{"date":"2025-09-26T17:42:12","request-id":"f8624d85-91e2-41f3-b0fc-c984206600dd","client-request-id":"f8624d85-91e2-41f3-b0fc-c984206600dd"}}}
+INFO 2025-09-26 23:36:23,754 microsoft_graph_email_fixed 35128 42488 Acquiring new Microsoft Graph token
+INFO 2025-09-26 23:36:26,287 microsoft_graph_email_fixed 35128 42488 Microsoft Graph token acquired successfully
