@@ -22,7 +22,8 @@ from .serializers import (
 from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 from users.models import Profile
-from common.email_service import email_service
+from common.simple_email_service import simple_email_service as email_service
+
 
 logger = logging.getLogger(__name__)
 

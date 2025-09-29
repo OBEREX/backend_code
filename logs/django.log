@@ -600,3 +600,40 @@ INFO 2025-09-26 18:42:10,653 microsoft_graph_email 33808 51972 Microsoft Graph t
 ERROR 2025-09-26 18:42:12,695 microsoft_graph_email 33808 51972 Connection test failed: 403 - {"error":{"code":"Authorization_RequestDenied","message":"Insufficient privileges to complete the operation.","innerError":{"date":"2025-09-26T17:42:12","request-id":"f8624d85-91e2-41f3-b0fc-c984206600dd","client-request-id":"f8624d85-91e2-41f3-b0fc-c984206600dd"}}}
 INFO 2025-09-26 23:36:23,754 microsoft_graph_email_fixed 35128 42488 Acquiring new Microsoft Graph token
 INFO 2025-09-26 23:36:26,287 microsoft_graph_email_fixed 35128 42488 Microsoft Graph token acquired successfully
+INFO 2025-09-29 11:17:33,974 autoreload 17392 51508 Watching for file changes with StatReloader
+INFO 2025-09-29 11:17:36,953 simple_email_service 17392 51508 Microsoft Graph email provider initialized
+INFO 2025-09-29 11:18:20,210 basehttp 17392 21464 "GET /health/ HTTP/1.1" 200 70
+INFO 2025-09-29 11:22:35,289 basehttp 17392 15292 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+INFO 2025-09-29 11:22:41,209 _client 17392 15292 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-09-29 11:22:49,130 _client 17392 15292 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+WARNING 2025-09-29 11:22:49,145 simple_email_service 17392 15292 Provider doesn't support send_otp, using fallback
+INFO 2025-09-29 11:22:49,153 basehttp 17392 15292 "POST /auth/signup/ HTTP/1.1" 201 256
+INFO 2025-09-29 11:24:33,486 basehttp 17392 15292 "OPTIONS /auth/login/ HTTP/1.1" 200 0
+INFO 2025-09-29 11:24:35,866 _client 17392 15292 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=password "HTTP/1.1 200 OK"
+INFO 2025-09-29 11:24:37,345 _client 17392 15292 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/update_last_login "HTTP/1.1 204 No Content"
+INFO 2025-09-29 11:24:37,352 basehttp 17392 15292 "POST /auth/login/ HTTP/1.1" 200 1691
+INFO 2025-09-29 11:24:37,370 basehttp 17392 15292 "OPTIONS /auth/profile/ HTTP/1.1" 200 0
+WARNING 2025-09-29 11:24:37,382 log 17392 15292 Forbidden: /auth/profile/
+WARNING 2025-09-29 11:24:37,385 basehttp 17392 15292 "GET /auth/profile/ HTTP/1.1" 403 132
+INFO 2025-09-29 11:28:14,036 autoreload 34944 26844 Watching for file changes with StatReloader
+INFO 2025-09-29 11:28:15,416 simple_email_service 34944 26844 Microsoft Graph email provider initialized
+INFO 2025-09-29 11:29:33,603 _client 34944 51792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-09-29 11:29:40,843 _client 34944 51792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+WARNING 2025-09-29 11:29:40,854 simple_email_service 34944 51792 Provider doesn't support send_otp, using fallback
+INFO 2025-09-29 11:29:40,861 basehttp 34944 51792 "POST /auth/signup/ HTTP/1.1" 201 256
+INFO 2025-09-29 11:30:37,141 basehttp 34944 51792 "OPTIONS /auth/logout/ HTTP/1.1" 200 0
+WARNING 2025-09-29 11:30:37,166 log 34944 51792 Forbidden: /auth/logout/
+WARNING 2025-09-29 11:30:37,169 basehttp 34944 51792 "POST /auth/logout/ HTTP/1.1" 403 132
+INFO 2025-09-29 11:30:46,863 _client 34944 51792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=password "HTTP/1.1 400 Bad Request"
+WARNING 2025-09-29 11:30:46,867 log 34944 51792 Unauthorized: /auth/login/
+WARNING 2025-09-29 11:30:46,869 basehttp 34944 51792 "POST /auth/login/ HTTP/1.1" 401 85
+INFO 2025-09-29 11:31:20,041 _client 34944 51792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=password "HTTP/1.1 200 OK"
+INFO 2025-09-29 11:31:22,647 _client 34944 51792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/update_last_login "HTTP/1.1 204 No Content"
+INFO 2025-09-29 11:31:22,660 basehttp 34944 51792 "POST /auth/login/ HTTP/1.1" 200 1691
+WARNING 2025-09-29 11:31:22,679 log 34944 51792 Forbidden: /auth/profile/
+WARNING 2025-09-29 11:31:22,683 basehttp 34944 51792 "GET /auth/profile/ HTTP/1.1" 403 132
+INFO 2025-09-29 11:32:40,935 _client 34944 51792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=password "HTTP/1.1 200 OK"
+INFO 2025-09-29 11:32:43,193 _client 34944 51792 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/update_last_login "HTTP/1.1 204 No Content"
+INFO 2025-09-29 11:32:43,210 basehttp 34944 51792 "POST /auth/login/ HTTP/1.1" 200 1691
+WARNING 2025-09-29 11:32:43,231 log 34944 51792 Forbidden: /auth/profile/
+WARNING 2025-09-29 11:32:43,236 basehttp 34944 51792 "GET /auth/profile/ HTTP/1.1" 403 132

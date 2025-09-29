@@ -56,13 +56,13 @@ class Command(BaseCommand):
         # Initialize provider
         try:
             provider = MicrosoftGraphEmailProvider()
-            self.stdout.write(self.style.SUCCESS('✓ Provider initialized successfully'))
+            self.stdout.write(self.style.SUCCESS('Provider initialized successfully'))
         except ValueError as e:
-            self.stdout.write(self.style.ERROR(f'✗ Configuration Error: {str(e)}'))
+            self.stdout.write(self.style.ERROR(f'Configuration Error: {str(e)}'))
             self.print_configuration_help()
             return
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'✗ Initialization Error: {str(e)}'))
+            self.stdout.write(self.style.ERROR(f'Initialization Error: {str(e)}'))
             return
         
         # Run tests based on options
@@ -95,15 +95,15 @@ class Command(BaseCommand):
         
         try:
             if provider.test_connection():
-                self.stdout.write(self.style.SUCCESS('✓ API connection successful'))
+                self.stdout.write(self.style.SUCCESS('API connection successful'))
                 self.stdout.write(f'  Tenant ID: {provider.tenant_id}')
                 self.stdout.write(f'  Client ID: {provider.client_id}')
                 self.stdout.write(f'  Sender: {provider.sender_email}')
             else:
-                self.stdout.write(self.style.ERROR('✗ API connection failed'))
+                self.stdout.write(self.style.ERROR('API connection failed'))
                 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'✗ Connection test error: {str(e)}'))
+            self.stdout.write(self.style.ERROR(f'Connection test error: {str(e)}'))
     
     def test_token_acquisition(self, provider):
         """Test OAuth token acquisition."""
@@ -112,14 +112,14 @@ class Command(BaseCommand):
         try:
             token = provider._get_access_token()
             if token:
-                self.stdout.write(self.style.SUCCESS('✓ Token acquired successfully'))
+                self.stdout.write(self.style.SUCCESS('Token acquired successfully'))
                 self.stdout.write(f'  Token length: {len(token)} characters')
                 self.stdout.write(f'  Token preview: {token[:20]}...')
             else:
-                self.stdout.write(self.style.ERROR('✗ Failed to acquire token'))
+                self.stdout.write(self.style.ERROR('Failed to acquire token'))
                 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'✗ Token acquisition error: {str(e)}'))
+            self.stdout.write(self.style.ERROR(f'Token acquisition error: {str(e)}'))
     
     def check_permissions(self, provider):
         """Check Microsoft Graph API permissions."""
@@ -159,7 +159,7 @@ class Command(BaseCommand):
             )
             
             if response.status_code == 202:
-                self.stdout.write(self.style.SUCCESS('✓ Mail.Send permission verified'))
+                self.stdout.write(self.style.SUCCESS('Mail.Send permission verified'))
             elif response.status_code == 403:
                 self.stdout.write(self.style.ERROR('✗ Mail.Send permission missing'))
                 self.stdout.write(self.style.WARNING('  Please grant admin consent in Azure AD'))
@@ -199,9 +199,9 @@ class Command(BaseCommand):
             )
             
             if success:
-                self.stdout.write(self.style.SUCCESS(f'✓ Test email sent to {test_email}'))
+                self.stdout.write(self.style.SUCCESS(f'Test email sent to {test_email}'))
             else:
-                self.stdout.write(self.style.ERROR(f'✗ Failed to send test email'))
+                self.stdout.write(self.style.ERROR(f'Failed to send test email'))
                 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'✗ Email send error: {str(e)}'))
@@ -220,9 +220,9 @@ class Command(BaseCommand):
             )
             
             if success:
-                self.stdout.write(self.style.SUCCESS(f'✓ Registration OTP sent to {email}'))
+                self.stdout.write(self.style.SUCCESS(f'Registration OTP sent to {email}'))
             else:
-                self.stdout.write(self.style.ERROR('✗ Failed to send registration OTP'))
+                self.stdout.write(self.style.ERROR('Failed to send registration OTP'))
             
             # Test password reset OTP
             success = provider.send_otp(
@@ -233,12 +233,12 @@ class Command(BaseCommand):
             )
             
             if success:
-                self.stdout.write(self.style.SUCCESS(f'✓ Password reset OTP sent to {email}'))
+                self.stdout.write(self.style.SUCCESS(f'Password reset OTP sent to {email}'))
             else:
-                self.stdout.write(self.style.ERROR('✗ Failed to send password reset OTP'))
+                self.stdout.write(self.style.ERROR('Failed to send password reset OTP'))
                 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'✗ OTP send error: {str(e)}'))
+            self.stdout.write(self.style.ERROR(f'OTP send error: {str(e)}'))
     
     def test_bulk_send(self, provider, emails):
         """Test bulk email sending."""
@@ -254,7 +254,7 @@ class Command(BaseCommand):
             
             self.stdout.write(f"\nBulk Send Results:")
             self.stdout.write(f"  Total: {results['total']}")
-            self.stdout.write(self.style.SUCCESS(f"  ✓ Success: {results['success']}"))
+            self.stdout.write(self.style.SUCCESS(f"Success: {results['success']}"))
             
             if results['failed']:
                 self.stdout.write(self.style.ERROR(f"  ✗ Failed: {len(results['failed'])}"))
@@ -295,9 +295,9 @@ provider = MicrosoftGraphEmailProvider()
 # Test connection
 print("Testing connection...")
 if provider.test_connection():
-    print("✓ Connection successful!")
+    print("Connection successful!")
 else:
-    print("✗ Connection failed!")
+    print("Connection failed!")
 
 # Send test OTP
 print("\nSending test OTP...")
@@ -307,5 +307,5 @@ success = provider.send_otp(
     otp_type="registration",
     metadata={"name": "Test User"}
 )
-print("✓ OTP sent!" if success else "✗ Failed to send OTP")
+print("OTP sent!" if success else "Failed to send OTP")
 """

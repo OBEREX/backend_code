@@ -167,7 +167,7 @@ class MicrosoftGraphEmailProvider:
             token = self._get_access_token()
             if token:
                 results['token_acquisition'] = True
-                logger.info("✓ Token acquisition successful")
+                logger.info("Token acquisition successful")
             else:
                 results['errors'].append("Failed to acquire token")
                 results['recommendations'].append("Check client ID and secret")
@@ -210,7 +210,7 @@ class MicrosoftGraphEmailProvider:
             
             if response.status_code == 202:
                 results['mail_send'] = True
-                logger.info("✓ Mail.Send permission verified")
+                logger.info("Mail.Send permission verified")
             elif response.status_code == 403:
                 error_data = response.json()
                 error_msg = error_data.get('error', {}).get('message', 'Unknown error')
@@ -255,9 +255,9 @@ def diagnose_microsoft_graph_setup():
     all_configured = True
     for name, value in config_items:
         if value:
-            print(f"✓ {name}: {value}")
+            print(f" {name}: {value}")
         else:
-            print(f"✗ {name}: NOT CONFIGURED")
+            print(f" {name}: NOT CONFIGURED")
             all_configured = False
     
     if not all_configured:
@@ -272,14 +272,14 @@ def diagnose_microsoft_graph_setup():
         results = provider.diagnose_permissions()
         
         if results['token_acquisition']:
-            print("✓ Token acquisition: SUCCESS")
+            print("Token acquisition: SUCCESS")
         else:
-            print("✗ Token acquisition: FAILED")
+            print("Token acquisition: FAILED")
         
         if results['mail_send']:
-            print("✓ Mail.Send permission: VERIFIED")
+            print("Mail.Send permission: VERIFIED")
         else:
-            print("✗ Mail.Send permission: NOT WORKING")
+            print("Mail.Send permission: NOT WORKING")
         
         if results['errors']:
             print("\n⚠️ Errors found:")

@@ -702,7 +702,14 @@ class MicrosoftGraphEmailAdapter:
     """Adapter to integrate with existing email service interface."""
     
     def __init__(self):
-        self.provider = MicrosoftGraphEmailProvider()
+        try:
+            from common.microsoft_graph_email_fixed import MicrosoftGraphEmailProvider
+            self.provider = MicrosoftGraphEmailProvider()
+            logger.info("Initialized Microsoft Graph email provider (fixed version)")
+        except ImportError:
+            logger.error("Could not import any Microsoft Graph email provider")
+            raise ImportError("Microsoft Graph email provider not available")
+
     
     def send_otp(self, email: str, otp_code: str, otp_type: str, 
                  metadata: Dict[str, Any] = None) -> bool:
