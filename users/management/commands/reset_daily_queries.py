@@ -1,5 +1,3 @@
-# File: users/management/commands/reset_daily_queries.py
-
 from django.core.management.base import BaseCommand
 from users.models import Profile
 

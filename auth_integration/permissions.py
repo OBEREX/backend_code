@@ -1,5 +1,3 @@
-# File: auth_integration/permissions.py
-
 from rest_framework.permissions import BasePermission
 
 

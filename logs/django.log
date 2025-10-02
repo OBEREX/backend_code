@@ -637,3 +637,224 @@ INFO 2025-09-29 11:32:43,193 _client 34944 51792 HTTP Request: POST https://jgif
 INFO 2025-09-29 11:32:43,210 basehttp 34944 51792 "POST /auth/login/ HTTP/1.1" 200 1691
 WARNING 2025-09-29 11:32:43,231 log 34944 51792 Forbidden: /auth/profile/
 WARNING 2025-09-29 11:32:43,236 basehttp 34944 51792 "GET /auth/profile/ HTTP/1.1" 403 132
+INFO 2025-09-29 11:36:23,182 autoreload 48140 41176 Watching for file changes with StatReloader
+INFO 2025-09-29 11:36:24,719 simple_email_service 48140 41176 Microsoft Graph email provider initialized
+INFO 2025-09-29 11:36:31,972 basehttp 48140 46860 "OPTIONS /auth/forgot-password/ HTTP/1.1" 200 0
+INFO 2025-09-29 11:36:36,881 _client 48140 46860 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+WARNING 2025-09-29 11:36:36,891 simple_email_service 48140 46860 Provider doesn't support send_otp, using fallback
+INFO 2025-09-29 11:36:36,897 basehttp 48140 46860 "POST /auth/forgot-password/ HTTP/1.1" 200 147
+INFO 2025-09-29 11:40:26,054 autoreload 48140 41176 C:\Users\aliba\Documents\Hesabu\pefoma_backend\common\simple_email_service.py changed, reloading.
+INFO 2025-09-29 11:40:28,031 autoreload 12056 57952 Watching for file changes with StatReloader
+INFO 2025-09-29 11:40:29,662 simple_email_service 12056 57952 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 11:49:33,091 simple_email_service 39780 1440 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-09-29 11:49:59,546 simple_email_service 39780 1440 Provider doesn't support send_otp, using fallback
+WARNING 2025-09-29 11:49:59,555 simple_email_service 39780 1440 Available methods: ['client_id', 'client_secret', 'diagnose_permissions', 'send_mail_url', 'sender_email', 'session', 'tenant_id', 'test_connection', 'token_url']
+WARNING 2025-09-29 11:50:28,306 simple_email_service 39780 1440 Provider doesn't support send_otp, using fallback
+WARNING 2025-09-29 11:50:28,308 simple_email_service 39780 1440 Available methods: ['client_id', 'client_secret', 'diagnose_permissions', 'send_mail_url', 'sender_email', 'session', 'tenant_id', 'test_connection', 'token_url']
+INFO 2025-09-29 12:24:08,504 autoreload 1332 30736 Watching for file changes with StatReloader
+INFO 2025-09-29 12:24:10,149 simple_email_service 1332 30736 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 12:31:46,628 simple_email_service 48752 25484 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 12:31:47,935 microsoft_graph_email 48752 25484 Acquiring new Microsoft Graph token
+INFO 2025-09-29 12:31:49,779 microsoft_graph_email 48752 25484 Microsoft Graph token acquired, cached for 3299 seconds
+ERROR 2025-09-29 12:31:51,485 microsoft_graph_email 48752 25484 Connection test failed: 403 - {"error":{"code":"Authorization_RequestDenied","message":"Insufficient privileges to complete the operation.","innerError":{"date":"2025-09-29T11:31:50","request-id":"a75ccb15-cb1a-477d-bbd4-a8c6650a8a7d","client-request-id":"a75ccb15-cb1a-477d-bbd4-a8c6650a8a7d"}}}
+INFO 2025-09-29 12:32:40,909 simple_email_service 57352 53544 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 13:16:17,952 simple_email_service 42696 20940 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 13:18:02,979 simple_email_service 45288 10328 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 13:18:06,743 microsoft_graph_email_fixed 45288 10328 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-09-29 13:18:07,324 microsoft_graph_email_fixed 45288 10328 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-09-29 13:43:00,011 simple_email_service 59380 17868 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 13:43:01,147 microsoft_graph_email_fixed 59380 17868 Acquiring new Microsoft Graph token
+INFO 2025-09-29 13:43:03,105 microsoft_graph_email_fixed 59380 17868 Microsoft Graph token acquired successfully
+INFO 2025-09-29 13:43:03,107 microsoft_graph_email_fixed 59380 17868 Token obtained successfully, testing API access...
+INFO 2025-09-29 13:43:05,619 microsoft_graph_email_fixed 59380 17868 [SUCCESS] Microsoft Graph API connection test successful
+INFO 2025-09-29 20:09:36,383 autoreload 61824 56572 Watching for file changes with StatReloader
+INFO 2025-09-29 20:09:38,552 simple_email_service 61824 56572 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-09-29 20:09:55,302 log 61824 64116 Not Found: /auth/users/delete/
+WARNING 2025-09-29 20:09:55,304 basehttp 61824 64116 "DELETE /auth/users/delete/ HTTP/1.1" 404 5077
+WARNING 2025-09-29 20:10:22,889 log 61824 64116 Not Found: /auth/users/delete/
+WARNING 2025-09-29 20:10:22,892 basehttp 61824 64116 "DELETE /auth/users/delete/ HTTP/1.1" 404 5077
+INFO 2025-09-29 20:12:31,555 autoreload 61824 56572 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:12:33,769 autoreload 45620 40760 Watching for file changes with StatReloader
+INFO 2025-09-29 20:13:16,936 autoreload 45620 40760 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:13:18,906 autoreload 46056 29516 Watching for file changes with StatReloader
+INFO 2025-09-29 20:13:24,930 autoreload 46056 29516 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:13:26,774 autoreload 27492 22968 Watching for file changes with StatReloader
+INFO 2025-09-29 20:13:35,158 autoreload 27492 22968 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:13:37,184 autoreload 62924 60952 Watching for file changes with StatReloader
+INFO 2025-09-29 20:13:38,973 simple_email_service 62924 60952 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:13:44,562 autoreload 62924 60952 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:13:46,736 autoreload 58052 64268 Watching for file changes with StatReloader
+INFO 2025-09-29 20:13:54,006 autoreload 58052 64268 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:13:55,918 autoreload 63892 58444 Watching for file changes with StatReloader
+INFO 2025-09-29 20:13:57,579 simple_email_service 63892 58444 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:14:01,192 autoreload 63892 58444 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:14:03,323 autoreload 33896 37556 Watching for file changes with StatReloader
+INFO 2025-09-29 20:14:14,017 autoreload 33896 37556 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:14:15,900 autoreload 59648 16704 Watching for file changes with StatReloader
+INFO 2025-09-29 20:14:24,158 autoreload 59648 16704 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:14:26,191 autoreload 56688 30100 Watching for file changes with StatReloader
+INFO 2025-09-29 20:14:27,800 simple_email_service 56688 30100 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:14:49,178 autoreload 56688 30100 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-29 20:14:51,396 autoreload 62328 61736 Watching for file changes with StatReloader
+INFO 2025-09-29 20:14:53,054 simple_email_service 62328 61736 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-09-29 20:15:05,952 log 62328 44388 Not Found: /auth/users/delete/
+WARNING 2025-09-29 20:15:05,954 basehttp 62328 44388 "DELETE /auth/users/delete/ HTTP/1.1" 404 5639
+INFO 2025-09-29 20:15:21,630 autoreload 62328 61736 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:15:23,640 autoreload 62840 26312 Watching for file changes with StatReloader
+INFO 2025-09-29 20:15:25,259 simple_email_service 62840 26312 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:15:27,658 autoreload 62840 26312 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:15:29,709 autoreload 60832 59484 Watching for file changes with StatReloader
+INFO 2025-09-29 20:15:31,303 simple_email_service 60832 59484 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-09-29 20:15:50,642 log 60832 63216 Not Found: /auth/users/delete-user/
+WARNING 2025-09-29 20:15:50,645 basehttp 60832 63216 "DELETE /auth/users/delete-user/ HTTP/1.1" 404 5643
+INFO 2025-09-29 20:16:06,247 autoreload 63580 40440 Watching for file changes with StatReloader
+INFO 2025-09-29 20:16:07,771 simple_email_service 63580 40440 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-09-29 20:16:24,201 log 63580 3376 Not Found: /auth/users/delete-user/
+WARNING 2025-09-29 20:16:24,204 basehttp 63580 3376 "DELETE /auth/users/delete-user/ HTTP/1.1" 404 5654
+INFO 2025-09-29 20:19:05,604 autoreload 63580 40440 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:19:07,597 autoreload 52456 13416 Watching for file changes with StatReloader
+INFO 2025-09-29 20:19:12,464 autoreload 52456 13416 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:19:14,346 autoreload 52204 62972 Watching for file changes with StatReloader
+INFO 2025-09-29 20:19:18,858 autoreload 52204 62972 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:19:20,591 autoreload 37808 33208 Watching for file changes with StatReloader
+INFO 2025-09-29 20:19:22,177 simple_email_service 37808 33208 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:20:04,692 autoreload 37808 33208 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:20:06,812 autoreload 22752 34104 Watching for file changes with StatReloader
+INFO 2025-09-29 20:20:08,402 simple_email_service 22752 34104 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-09-29 20:20:34,004 log 22752 3184 Not Found: /auth/users/delete-user/
+WARNING 2025-09-29 20:20:34,007 basehttp 22752 3184 "DELETE /auth/users/delete-user/ HTTP/1.1" 404 5654
+WARNING 2025-09-29 20:21:50,248 log 22752 56412 Not Found: /auth/auth/delete-user/
+WARNING 2025-09-29 20:21:50,250 basehttp 22752 56412 "DELETE /auth/auth/delete-user/ HTTP/1.1" 404 5651
+INFO 2025-09-29 20:22:53,173 autoreload 22752 34104 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-29 20:22:55,337 autoreload 62836 61680 Watching for file changes with StatReloader
+INFO 2025-09-29 20:22:56,923 simple_email_service 62836 61680 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:23:43,988 autoreload 62836 61680 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-29 20:23:46,102 autoreload 64064 60660 Watching for file changes with StatReloader
+INFO 2025-09-29 20:23:47,716 simple_email_service 64064 60660 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:25:31,172 autoreload 64064 60660 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\urls.py changed, reloading.
+INFO 2025-09-29 20:25:33,202 autoreload 58716 41116 Watching for file changes with StatReloader
+INFO 2025-09-29 20:25:34,847 simple_email_service 58716 41116 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:26:25,691 autoreload 58716 41116 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:26:27,977 autoreload 62232 60520 Watching for file changes with StatReloader
+INFO 2025-09-29 20:26:29,557 simple_email_service 62232 60520 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:26:35,959 autoreload 62232 60520 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:26:38,052 autoreload 60804 59744 Watching for file changes with StatReloader
+INFO 2025-09-29 20:26:39,571 simple_email_service 60804 59744 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:26:53,406 autoreload 60804 59744 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:26:55,420 autoreload 30120 51468 Watching for file changes with StatReloader
+INFO 2025-09-29 20:26:57,018 simple_email_service 30120 51468 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:27:01,709 autoreload 30120 51468 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:27:03,711 autoreload 63812 40420 Watching for file changes with StatReloader
+INFO 2025-09-29 20:27:05,214 simple_email_service 63812 40420 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:27:07,150 autoreload 63812 40420 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:27:09,093 autoreload 60388 61896 Watching for file changes with StatReloader
+INFO 2025-09-29 20:27:10,735 simple_email_service 60388 61896 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:27:24,729 autoreload 60388 61896 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:27:26,769 autoreload 63928 49036 Watching for file changes with StatReloader
+INFO 2025-09-29 20:27:28,243 simple_email_service 63928 49036 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:27:34,033 autoreload 63928 49036 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:27:36,012 autoreload 63456 33720 Watching for file changes with StatReloader
+INFO 2025-09-29 20:27:37,555 simple_email_service 63456 33720 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:27:46,832 autoreload 63456 33720 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:27:48,865 autoreload 35648 60452 Watching for file changes with StatReloader
+INFO 2025-09-29 20:27:50,373 simple_email_service 35648 60452 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:27:55,059 autoreload 35648 60452 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\views.py changed, reloading.
+INFO 2025-09-29 20:27:56,998 autoreload 9864 45836 Watching for file changes with StatReloader
+INFO 2025-09-29 20:27:58,491 simple_email_service 9864 45836 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:30:38,829 autoreload 9864 45836 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-09-29 20:30:40,846 autoreload 63612 59020 Watching for file changes with StatReloader
+INFO 2025-09-29 20:30:42,455 simple_email_service 63612 59020 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:39:51,537 autoreload 41232 11096 Watching for file changes with StatReloader
+INFO 2025-09-29 20:39:53,150 simple_email_service 41232 11096 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-09-29 20:40:35,658 log 41232 45452 Not Found: /auth/users/delete-user/
+WARNING 2025-09-29 20:40:35,662 basehttp 41232 45452 "DELETE /auth/users/delete-user/ HTTP/1.1" 404 5092
+INFO 2025-09-29 20:40:47,934 views 41232 45452 Attempting to delete user: 961ae2ae-e55c-455e-bf5a-d5f581ddbd35 (ali.balogun@escapetech.net)
+INFO 2025-09-29 20:40:53,030 _client 41232 45452 HTTP Request: DELETE https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users/961ae2ae-e55c-455e-bf5a-d5f581ddbd35 "HTTP/1.1 200 OK"
+INFO 2025-09-29 20:40:53,033 views 41232 45452 Successfully deleted user from Supabase: 961ae2ae-e55c-455e-bf5a-d5f581ddbd35
+INFO 2025-09-29 20:40:53,216 views 41232 45452 Successfully deleted user from Django: 961ae2ae-e55c-455e-bf5a-d5f581ddbd35
+INFO 2025-09-29 20:40:53,220 basehttp 41232 45452 "DELETE /users/delete-user/ HTTP/1.1" 200 159
+INFO 2025-09-29 20:44:55,989 basehttp 41232 46140 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+INFO 2025-09-29 20:45:02,560 _client 41232 46140 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-09-29 20:45:10,260 _client 41232 46140 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-09-29 20:45:10,272 simple_email_service 41232 46140 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+ERROR 2025-09-29 20:45:10,275 simple_email_service 41232 46140 Error sending OTP: str.format() got multiple values for keyword argument 'name'
+ERROR 2025-09-29 20:45:10,281 simple_email_service 41232 46140 Traceback (most recent call last):
+  File "C:\Users\aliba\Documents\Hesabu\pefoma_backend\common\simple_email_service.py", line 58, in send_otp
+    return self.provider.send_otp(email, otp_code, otp_type, metadata)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aliba\Documents\Hesabu\pefoma_backend\common\microsoft_graph_email.py", line 234, in send_otp
+    subject, html_content, importance = self._get_otp_template(
+                                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aliba\Documents\Hesabu\pefoma_backend\common\microsoft_graph_email.py", line 655, in _get_otp_template
+    html = template['html'].format(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: str.format() got multiple values for keyword argument 'name'
+
+INFO 2025-09-29 20:45:10,291 basehttp 41232 46140 "POST /auth/signup/ HTTP/1.1" 201 249
+INFO 2025-09-29 20:48:57,603 autoreload 41232 11096 C:\Users\aliba\Documents\Hesabu\pefoma_backend\common\simple_email_service.py changed, reloading.
+INFO 2025-09-29 20:48:59,840 autoreload 62080 54388 Watching for file changes with StatReloader
+INFO 2025-09-29 20:49:01,437 simple_email_service 62080 54388 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:50:58,637 autoreload 28316 59228 Watching for file changes with StatReloader
+INFO 2025-09-29 20:51:00,093 simple_email_service 28316 59228 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 20:51:18,646 views 28316 59824 Attempting to delete user: 6aff68cb-c1ed-4020-8b85-056c89bd0c0e (ali.balogun@escapetech.net)
+INFO 2025-09-29 20:51:22,922 _client 28316 59824 HTTP Request: DELETE https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/admin/users/6aff68cb-c1ed-4020-8b85-056c89bd0c0e "HTTP/1.1 200 OK"
+INFO 2025-09-29 20:51:22,926 views 28316 59824 Successfully deleted user from Supabase: 6aff68cb-c1ed-4020-8b85-056c89bd0c0e
+INFO 2025-09-29 20:51:23,126 views 28316 59824 Successfully deleted user from Django: 6aff68cb-c1ed-4020-8b85-056c89bd0c0e
+INFO 2025-09-29 20:51:23,131 basehttp 28316 59824 "DELETE /users/delete-user/ HTTP/1.1" 200 159
+INFO 2025-09-29 20:51:38,453 basehttp 28316 62360 "OPTIONS /auth/logout/ HTTP/1.1" 200 0
+WARNING 2025-09-29 20:51:38,466 log 28316 62360 Unauthorized: /auth/logout/
+WARNING 2025-09-29 20:51:38,469 basehttp 28316 62360 "POST /auth/logout/ HTTP/1.1" 401 112
+INFO 2025-09-29 20:51:38,485 basehttp 28316 62360 "OPTIONS /auth/refresh/ HTTP/1.1" 200 0
+WARNING 2025-09-29 20:51:39,738 log 28316 55168 Unauthorized: /auth/logout/
+WARNING 2025-09-29 20:51:39,741 basehttp 28316 55168 "POST /auth/logout/ HTTP/1.1" 401 112
+WARNING 2025-09-29 20:51:41,071 log 28316 58992 Unauthorized: /auth/logout/
+WARNING 2025-09-29 20:51:41,074 basehttp 28316 58992 "POST /auth/logout/ HTTP/1.1" 401 112
+WARNING 2025-09-29 20:51:41,904 log 28316 61964 Unauthorized: /auth/logout/
+WARNING 2025-09-29 20:51:41,910 basehttp 28316 61964 "POST /auth/logout/ HTTP/1.1" 401 112
+INFO 2025-09-29 20:51:43,559 _client 28316 62360 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=refresh_token "HTTP/1.1 400 Bad Request"
+ERROR 2025-09-29 20:51:43,569 log 28316 62360 Internal Server Error: /auth/refresh/
+ERROR 2025-09-29 20:51:43,573 basehttp 28316 62360 "POST /auth/refresh/ HTTP/1.1" 500 95
+INFO 2025-09-29 20:51:45,445 _client 28316 55168 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=refresh_token "HTTP/1.1 400 Bad Request"
+ERROR 2025-09-29 20:51:45,453 log 28316 55168 Internal Server Error: /auth/refresh/
+INFO 2025-09-29 20:51:45,456 basehttp 28316 55168 - Broken pipe from ('127.0.0.1', 65530)
+INFO 2025-09-29 20:51:46,821 _client 28316 58992 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=refresh_token "HTTP/1.1 400 Bad Request"
+ERROR 2025-09-29 20:51:46,826 log 28316 58992 Internal Server Error: /auth/refresh/
+INFO 2025-09-29 20:51:46,829 basehttp 28316 58992 - Broken pipe from ('127.0.0.1', 49152)
+INFO 2025-09-29 20:51:47,418 _client 28316 61964 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/token?grant_type=refresh_token "HTTP/1.1 400 Bad Request"
+ERROR 2025-09-29 20:51:47,424 log 28316 61964 Internal Server Error: /auth/refresh/
+INFO 2025-09-29 20:51:47,427 basehttp 28316 61964 - Broken pipe from ('127.0.0.1', 49154)
+INFO 2025-09-29 20:53:28,656 _client 28316 62360 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-09-29 20:53:36,388 _client 28316 62360 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-09-29 20:53:36,399 simple_email_service 28316 62360 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+INFO 2025-09-29 20:53:37,379 microsoft_graph_email_fixed 28316 62360 Acquiring new Microsoft Graph token
+INFO 2025-09-29 20:53:40,127 microsoft_graph_email_fixed 28316 62360 Microsoft Graph token acquired successfully
+INFO 2025-09-29 20:53:45,656 microsoft_graph_email_fixed 28316 62360 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-09-29 20:53:45,660 basehttp 28316 62360 "POST /auth/signup/ HTTP/1.1" 201 250
+INFO 2025-09-29 20:56:07,499 _client 28316 28032 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/verify_otp "HTTP/1.1 200 OK"
+WARNING 2025-09-29 20:56:07,515 log 28316 28032 Bad Request: /auth/verify-otp/
+WARNING 2025-09-29 20:56:07,518 basehttp 28316 28032 "POST /auth/verify-otp/ HTTP/1.1" 400 108
+WARNING 2025-09-29 20:57:51,605 log 28316 59992 Bad Request: /auth/verify-otp/
+WARNING 2025-09-29 20:57:51,608 basehttp 28316 59992 "POST /auth/verify-otp/ HTTP/1.1" 400 73
+INFO 2025-09-29 20:58:19,082 _client 28316 59992 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/verify_otp "HTTP/1.1 200 OK"
+INFO 2025-09-29 20:58:24,402 microsoft_graph_email_fixed 28316 59992 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-09-29 20:58:24,408 basehttp 28316 59992 "POST /auth/verify-otp/ HTTP/1.1" 200 101
+INFO 2025-09-29 21:07:36,164 autoreload 28316 59228 C:\Users\aliba\Documents\Hesabu\pefoma_backend\manage.py changed, reloading.
+INFO 2025-09-29 21:07:38,449 autoreload 39596 25576 Watching for file changes with StatReloader
+INFO 2025-09-29 21:07:40,096 simple_email_service 39596 25576 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 21:09:21,908 autoreload 39596 25576 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\admin.py changed, reloading.
+INFO 2025-09-29 21:09:24,093 autoreload 41312 59100 Watching for file changes with StatReloader
+INFO 2025-09-29 21:09:25,677 simple_email_service 41312 59100 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 21:09:29,927 autoreload 41312 59100 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\apps.py changed, reloading.
+INFO 2025-09-29 21:09:31,962 autoreload 58752 58392 Watching for file changes with StatReloader
+INFO 2025-09-29 21:09:33,471 simple_email_service 58752 58392 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 21:09:49,331 autoreload 58752 58392 C:\Users\aliba\Documents\Hesabu\pefoma_backend\users\models.py changed, reloading.
+INFO 2025-09-29 21:09:51,465 autoreload 52000 52456 Watching for file changes with StatReloader
+INFO 2025-09-29 21:09:52,987 simple_email_service 52000 52456 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-09-29 21:39:41,780 basehttp 52000 56156 "OPTIONS /auth/forgot-password/ HTTP/1.1" 200 0
+INFO 2025-09-29 21:39:50,204 _client 52000 56156 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-09-29 21:39:50,223 simple_email_service 52000 56156 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+INFO 2025-09-29 21:39:54,086 microsoft_graph_email_fixed 52000 56156 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-09-29 21:39:54,091 basehttp 52000 56156 "POST /auth/forgot-password/ HTTP/1.1" 200 147
+INFO 2025-09-29 21:40:34,924 basehttp 52000 56156 "OPTIONS /auth/verify-otp/ HTTP/1.1" 200 0
+INFO 2025-09-29 21:40:40,653 _client 52000 56156 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/verify_otp "HTTP/1.1 200 OK"
+INFO 2025-09-29 21:40:40,661 basehttp 52000 56156 "POST /auth/verify-otp/ HTTP/1.1" 200 101

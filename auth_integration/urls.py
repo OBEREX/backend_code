@@ -12,6 +12,8 @@ urlpatterns = [
     path('reset-password/', views.ResetPasswordView.as_view(), name='reset_password'),
     path('verify-otp/', views.VerifyOTPView.as_view(), name='verify_otp'),
     path('resend-otp/', views.ResendOTPView.as_view(), name='resend_otp'),
+
+
     
     # Token management
     path('refresh/', views.TokenRefreshView.as_view(), name='refresh_token'),

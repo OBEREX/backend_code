@@ -1,5 +1,3 @@
-# File: Makefile
-
 .PHONY: help install test lint format clean docker-build docker-run migrations
 
 help:

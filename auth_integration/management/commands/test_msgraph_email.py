@@ -9,7 +9,7 @@ Usage:
 
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from common.microsoft_graph_email import MicrosoftGraphEmailProvider
+from common.microsoft_graph_email_fixed import MicrosoftGraphEmailProvider
 import logging
 from datetime import datetime
 
@@ -281,31 +281,3 @@ class Command(BaseCommand):
         self.stdout.write('\n3. The sender email must be:')
         self.stdout.write('   - A valid mailbox in your tenant')
         self.stdout.write('   - Licensed for Exchange Online')
-
-
-# Quick test script (can run in Django shell)
-"""
-# Run in Django shell: python manage.py shell
-
-from common.microsoft_graph_email import MicrosoftGraphEmailProvider
-
-# Initialize and test
-provider = MicrosoftGraphEmailProvider()
-
-# Test connection
-print("Testing connection...")
-if provider.test_connection():
-    print("Connection successful!")
-else:
-    print("Connection failed!")
-
-# Send test OTP
-print("\nSending test OTP...")
-success = provider.send_otp(
-    email="your.email@company.com",
-    otp_code="123456",
-    otp_type="registration",
-    metadata={"name": "Test User"}
-)
-print("OTP sent!" if success else "Failed to send OTP")
-"""

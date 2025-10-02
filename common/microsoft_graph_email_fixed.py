@@ -1,5 +1,7 @@
 """
-Fixed Microsoft Graph email provider with proper permission handling.
+Complete Microsoft Graph email provider with proper permission handling.
+Windows-safe version without special Unicode characters.
+Save this as: common/microsoft_graph_email_fixed.py
 """
 
 import logging
@@ -12,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class MicrosoftGraphEmailProvider:
-    """Fixed Microsoft Graph API email provider."""
+    """Complete Microsoft Graph API email provider."""
     
     def __init__(self, tenant_id: str = None, client_id: str = None, 
                  client_secret: str = None, sender_email: str = None):
@@ -77,7 +79,7 @@ class MicrosoftGraphEmailProvider:
             cache_timeout = max(expires_in - 300, 60)
             cache.set(cache_key, access_token, cache_timeout)
             
-            logger.info(f"Microsoft Graph token acquired successfully")
+            logger.info("Microsoft Graph token acquired successfully")
             return access_token
             
         except requests.exceptions.RequestException as e:
@@ -86,13 +88,273 @@ class MicrosoftGraphEmailProvider:
                 logger.error(f"Response: {e.response.text}")
             raise Exception(f"Token acquisition failed: {str(e)}")
     
-    def test_connection(self) -> bool:
+    def send_email(self, to_email: str, subject: str, html_content: str, 
+                   importance: str = "normal", headers: Dict[str, str] = None) -> bool:
         """
-        Test Microsoft Graph API connection using a minimal API call.
-        This only requires the token to be valid, not specific permissions.
+        Send email using Microsoft Graph API.
+        
+        Args:
+            to_email: Recipient email address
+            subject: Email subject
+            html_content: HTML body content
+            importance: Email importance (low, normal, high)
+            headers: Additional email headers
+            
+        Returns:
+            True if email sent successfully
         """
         try:
-            # Get token first
+            token = self._get_access_token()
+            
+            # Build message
+            message = {
+                "message": {
+                    "subject": subject,
+                    "body": {
+                        "contentType": "HTML",
+                        "content": html_content
+                    },
+                    "toRecipients": [
+                        {
+                            "emailAddress": {
+                                "address": to_email
+                            }
+                        }
+                    ],
+                    "importance": importance
+                },
+                "saveToSentItems": "false"
+            }
+            
+            # Add custom headers
+            if headers:
+                message["message"]["internetMessageHeaders"] = [
+                    {"name": key, "value": value}
+                    for key, value in headers.items()
+                ]
+            
+            # Send email
+            request_headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json'
+            }
+            
+            response = self.session.post(
+                self.send_mail_url,
+                json=message,
+                headers=request_headers,
+                timeout=30
+            )
+            
+            if response.status_code == 202:
+                logger.info(f"Email sent successfully to {to_email}")
+                return True
+            else:
+                logger.error(f"Failed to send email. Status: {response.status_code}")
+                logger.error(f"Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error sending email to {to_email}: {str(e)}")
+            return False
+    
+    def send_otp(self, email: str, otp_code: str, otp_type: str, 
+                 metadata: Dict[str, Any] = None) -> bool:
+        """
+        Send OTP email with beautiful templates.
+        
+        Args:
+            email: Recipient email
+            otp_code: 6-digit OTP code
+            otp_type: Type of OTP (registration, password_reset, login, email_verification)
+            metadata: Additional template variables (e.g., user name)
+            
+        Returns:
+            True if sent successfully
+        """
+        try:
+            # Get user name from metadata
+            user_name = metadata.get('name', 'User') if metadata else 'User'
+            
+            # Build email content based on OTP type
+            otp_messages = {
+                'registration': {
+                    'subject': 'Verify Your Pefoma Account',
+                    'title': 'Welcome to Pefoma!',
+                    'message': 'Thank you for signing up. Please use the code below to verify your email address.'
+                },
+                'password_reset': {
+                    'subject': 'Reset Your Pefoma Password',
+                    'title': 'Password Reset Request',
+                    'message': 'You requested to reset your password. Use the code below to proceed.'
+                },
+                'login': {
+                    'subject': 'Your Pefoma Login Code',
+                    'title': 'Login Verification',
+                    'message': 'Use this code to complete your login.'
+                },
+                'email_verification': {
+                    'subject': 'Verify Your Email Address',
+                    'title': 'Email Verification',
+                    'message': 'Please verify your email address using the code below.'
+                }
+            }
+            
+            otp_config = otp_messages.get(otp_type, otp_messages['registration'])
+            
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {{
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f5f5f5;
+                    }}
+                    .container {{
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background: white;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }}
+                    .header {{
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        padding: 40px 30px;
+                        text-align: center;
+                    }}
+                    .header h1 {{
+                        margin: 0;
+                        font-size: 28px;
+                        font-weight: 600;
+                    }}
+                    .content {{
+                        padding: 40px 30px;
+                    }}
+                    .greeting {{
+                        font-size: 18px;
+                        color: #333;
+                        margin-bottom: 20px;
+                    }}
+                    .message {{
+                        color: #666;
+                        margin-bottom: 30px;
+                        font-size: 16px;
+                        line-height: 1.8;
+                    }}
+                    .otp-container {{
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+                        border: 2px solid rgba(102, 126, 234, 0.3);
+                        border-radius: 12px;
+                        padding: 30px;
+                        text-align: center;
+                        margin: 30px 0;
+                    }}
+                    .otp-label {{
+                        color: #666;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        letter-spacing: 1.5px;
+                        margin-bottom: 15px;
+                        font-weight: 600;
+                    }}
+                    .otp-code {{
+                        font-size: 42px;
+                        font-weight: bold;
+                        letter-spacing: 8px;
+                        color: #667eea;
+                        font-family: 'Courier New', Monaco, monospace;
+                        margin: 10px 0;
+                    }}
+                    .otp-expiry {{
+                        color: #999;
+                        font-size: 14px;
+                        margin-top: 15px;
+                    }}
+                    .security-note {{
+                        background: #fff3cd;
+                        border: 1px solid #ffc107;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin: 20px 0;
+                        font-size: 14px;
+                        color: #856404;
+                    }}
+                    .footer {{
+                        text-align: center;
+                        color: #999;
+                        font-size: 12px;
+                        padding: 30px;
+                        background: #f8f9fa;
+                    }}
+                    .footer p {{
+                        margin: 5px 0;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>{otp_config['title']}</h1>
+                    </div>
+                    <div class="content">
+                        <p class="greeting">Hi {user_name},</p>
+                        <p class="message">{otp_config['message']}</p>
+                        
+                        <div class="otp-container">
+                            <div class="otp-label">YOUR VERIFICATION CODE</div>
+                            <div class="otp-code">{otp_code}</div>
+                            <p class="otp-expiry">This code expires in 10 minutes</p>
+                        </div>
+                        
+                        <div class="security-note">
+                            <strong>Security Notice:</strong> Never share this code with anyone. 
+                            Pefoma staff will never ask for your verification code.
+                        </div>
+                        
+                        <p style="color: #666; font-size: 14px;">
+                            If you didn't request this code, you can safely ignore this email. 
+                            Your account security is not at risk.
+                        </p>
+                    </div>
+                    <div class="footer">
+                        <p>&copy; 2025 Pefoma. All rights reserved.</p>
+                        <p>AI-Powered Inventory Management Platform</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Add tracking headers
+            email_headers = {
+                "X-Pefoma-Email-Type": otp_type,
+                "X-Pefoma-OTP": "true"
+            }
+            
+            return self.send_email(
+                to_email=email,
+                subject=otp_config['subject'],
+                html_content=html_content,
+                importance="high",
+                headers=email_headers
+            )
+            
+        except Exception as e:
+            logger.error(f"Error sending OTP email: {str(e)}")
+            return False
+    
+    def test_connection(self) -> bool:
+        """Test Microsoft Graph API connection."""
+        try:
             token = self._get_access_token()
             
             if not token:
@@ -101,11 +363,6 @@ class MicrosoftGraphEmailProvider:
             
             logger.info("Token obtained successfully, testing API access...")
             
-            # Test with a simple API call that doesn't require special permissions
-            # Using /me endpoint won't work for application permissions
-            # Instead, we'll validate the token format and try a minimal operation
-            
-            # Option 1: Try to send an email to self (requires Mail.Send only)
             test_message = {
                 "message": {
                     "subject": "Connection Test",
@@ -137,10 +394,10 @@ class MicrosoftGraphEmailProvider:
             )
             
             if response.status_code == 202:
-                logger.info("Microsoft Graph API connection test successful - Mail.Send permission verified")
+                logger.info("[SUCCESS] Microsoft Graph API connection test successful")
                 return True
             elif response.status_code == 403:
-                logger.error(f"Permission denied. Please ensure Mail.Send permission is granted with admin consent.")
+                logger.error("Permission denied. Please ensure Mail.Send permission is granted.")
                 logger.error(f"Response: {response.text}")
                 return False
             else:
@@ -152,9 +409,7 @@ class MicrosoftGraphEmailProvider:
             return False
     
     def diagnose_permissions(self) -> Dict[str, Any]:
-        """
-        Diagnose permission issues with detailed feedback.
-        """
+        """Diagnose permission issues with detailed feedback."""
         results = {
             'token_acquisition': False,
             'mail_send': False,
@@ -167,7 +422,7 @@ class MicrosoftGraphEmailProvider:
             token = self._get_access_token()
             if token:
                 results['token_acquisition'] = True
-                logger.info("Token acquisition successful")
+                logger.info("[SUCCESS] Token acquisition successful")
             else:
                 results['errors'].append("Failed to acquire token")
                 results['recommendations'].append("Check client ID and secret")
@@ -210,13 +465,13 @@ class MicrosoftGraphEmailProvider:
             
             if response.status_code == 202:
                 results['mail_send'] = True
-                logger.info("Mail.Send permission verified")
+                logger.info("[SUCCESS] Mail.Send permission verified")
             elif response.status_code == 403:
                 error_data = response.json()
                 error_msg = error_data.get('error', {}).get('message', 'Unknown error')
                 results['errors'].append(f"Mail.Send permission denied: {error_msg}")
                 results['recommendations'].append(
-                    "1. Go to Azure Portal → Your App → API permissions\n"
+                    "1. Go to Azure Portal -> Your App -> API permissions\n"
                     "2. Ensure 'Mail.Send' (Application) is listed\n"
                     "3. Click 'Grant admin consent'\n"
                     "4. Wait 5-10 minutes for permissions to propagate"
@@ -228,80 +483,3 @@ class MicrosoftGraphEmailProvider:
             results['errors'].append(f"Mail.Send test error: {str(e)}")
         
         return results
-
-
-# Quick diagnostic script
-def diagnose_microsoft_graph_setup():
-    """
-    Run a complete diagnostic of your Microsoft Graph setup.
-    """
-    print("\n" + "="*60)
-    print("MICROSOFT GRAPH API DIAGNOSTIC")
-    print("="*60 + "\n")
-    
-    # Check environment variables
-    print("1. Checking Configuration...")
-    print("-" * 40)
-    
-    from django.conf import settings
-    
-    config_items = [
-        ('MICROSOFT_TENANT_ID', settings.MICROSOFT_TENANT_ID if hasattr(settings, 'MICROSOFT_TENANT_ID') else None),
-        ('MICROSOFT_CLIENT_ID', settings.MICROSOFT_CLIENT_ID if hasattr(settings, 'MICROSOFT_CLIENT_ID') else None),
-        ('MICROSOFT_CLIENT_SECRET', 'SET' if hasattr(settings, 'MICROSOFT_CLIENT_SECRET') and settings.MICROSOFT_CLIENT_SECRET else 'NOT SET'),
-        ('MICROSOFT_SENDER_EMAIL', settings.MICROSOFT_SENDER_EMAIL if hasattr(settings, 'MICROSOFT_SENDER_EMAIL') else None),
-    ]
-    
-    all_configured = True
-    for name, value in config_items:
-        if value:
-            print(f" {name}: {value}")
-        else:
-            print(f" {name}: NOT CONFIGURED")
-            all_configured = False
-    
-    if not all_configured:
-        print("\n❌ Configuration incomplete. Please set all required environment variables.")
-        return
-    
-    print("\n2. Testing API Connection...")
-    print("-" * 40)
-    
-    try:
-        provider = MicrosoftGraphEmailProvider()
-        results = provider.diagnose_permissions()
-        
-        if results['token_acquisition']:
-            print("Token acquisition: SUCCESS")
-        else:
-            print("Token acquisition: FAILED")
-        
-        if results['mail_send']:
-            print("Mail.Send permission: VERIFIED")
-        else:
-            print("Mail.Send permission: NOT WORKING")
-        
-        if results['errors']:
-            print("\n⚠️ Errors found:")
-            for error in results['errors']:
-                print(f"  - {error}")
-        
-        if results['recommendations']:
-            print("\n💡 Recommendations:")
-            for rec in results['recommendations']:
-                print(f"  {rec}")
-        
-        if results['token_acquisition'] and results['mail_send']:
-            print("\n✅ Microsoft Graph API is properly configured and ready to use!")
-        else:
-            print("\n❌ Please fix the issues above before proceeding.")
-            
-    except Exception as e:
-        print(f"\n❌ Diagnostic failed: {str(e)}")
-
-
-# Run this in Django shell
-"""
-from common.microsoft_graph_email_fixed import diagnose_microsoft_graph_setup
-diagnose_microsoft_graph_setup()
-"""
