@@ -134,6 +134,7 @@ INSTALLED_APPS = [
     'auth_integration',
     'users',
     'api',
+    'dashboard',
     'common'
 ]
 

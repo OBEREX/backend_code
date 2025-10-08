@@ -11,6 +11,8 @@ from django.http import JsonResponse
 from django.views import View
 import json
 from django.utils import timezone
+from django.core.cache import cache
+
 
 from .supabase_client import SupabaseClient
 from .serializers import (

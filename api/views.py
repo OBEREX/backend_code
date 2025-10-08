@@ -34,6 +34,12 @@ class APIRootView(APIView):
                     'change_password': '/api/v1/users/change-password/',
                     'settings': '/api/v1/users/settings/',
                 },
+                'dashboard': {
+                    'overview': '/api/v1/dashboard/overview/',
+                    'scan_activity': '/api/v1/dashboard/scan-activity/',
+                    'category_distribution': '/api/v1/dashboard/category-distribution/',
+                    'system_status': '/api/v1/dashboard/system-status/',
+                },
                 'health': '/health/',
             }
         })

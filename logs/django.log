@@ -858,3 +858,131 @@ INFO 2025-09-29 21:39:54,091 basehttp 52000 56156 "POST /auth/forgot-password/ H
 INFO 2025-09-29 21:40:34,924 basehttp 52000 56156 "OPTIONS /auth/verify-otp/ HTTP/1.1" 200 0
 INFO 2025-09-29 21:40:40,653 _client 52000 56156 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/verify_otp "HTTP/1.1 200 OK"
 INFO 2025-09-29 21:40:40,661 basehttp 52000 56156 "POST /auth/verify-otp/ HTTP/1.1" 200 101
+INFO 2025-10-04 07:32:04,971 autoreload 37940 64760 Watching for file changes with StatReloader
+INFO 2025-10-04 07:32:08,375 simple_email_service 37940 64760 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-04 07:38:55,687 basehttp 37940 16860 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+INFO 2025-10-04 07:39:01,197 _client 37940 16860 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-04 07:39:08,664 _client 37940 16860 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-04 07:39:08,680 simple_email_service 37940 16860 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+INFO 2025-10-04 07:39:10,079 microsoft_graph_email_fixed 37940 16860 Acquiring new Microsoft Graph token
+INFO 2025-10-04 07:39:12,294 microsoft_graph_email_fixed 37940 16860 Microsoft Graph token acquired successfully
+INFO 2025-10-04 07:39:16,383 microsoft_graph_email_fixed 37940 16860 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-10-04 07:39:16,390 basehttp 37940 16860 "POST /auth/signup/ HTTP/1.1" 201 256
+INFO 2025-10-04 08:16:14,704 basehttp 37940 64404 "OPTIONS /auth/forgot-password/ HTTP/1.1" 200 0
+INFO 2025-10-04 08:16:22,575 _client 37940 64404 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-04 08:16:22,586 simple_email_service 37940 64404 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+INFO 2025-10-04 08:16:27,568 microsoft_graph_email_fixed 37940 64404 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-10-04 08:16:27,575 basehttp 37940 64404 "POST /auth/forgot-password/ HTTP/1.1" 200 147
+INFO 2025-10-04 15:57:53,255 autoreload 2640 58780 Watching for file changes with StatReloader
+INFO 2025-10-04 15:57:55,244 simple_email_service 2640 58780 [SUCCESS] Microsoft Graph email provider initialized
+WARNING 2025-10-04 16:00:46,087 log 2640 14004 Not Found: /api/docs
+WARNING 2025-10-04 16:00:46,091 basehttp 2640 14004 "GET /api/docs HTTP/1.1" 404 3191
+WARNING 2025-10-04 16:00:46,666 log 2640 14004 Not Found: /favicon.ico
+WARNING 2025-10-04 16:00:46,671 basehttp 2640 14004 "GET /favicon.ico HTTP/1.1" 404 2982
+WARNING 2025-10-04 16:00:48,338 log 2640 60616 Not Found: /favicon.ico
+WARNING 2025-10-04 16:00:48,341 basehttp 2640 60616 "GET /favicon.ico HTTP/1.1" 404 2982
+WARNING 2025-10-04 16:00:50,983 log 2640 14004 Not Found: /api/docs
+WARNING 2025-10-04 16:00:50,986 basehttp 2640 14004 "GET /api/docs HTTP/1.1" 404 3191
+INFO 2025-10-04 16:01:04,618 basehttp 2640 14004 "GET /admin/auth/user/ HTTP/1.1" 302 0
+INFO 2025-10-04 16:01:05,096 basehttp 2640 14004 "GET /admin/login/?next=/admin/auth/user/ HTTP/1.1" 200 4201
+WARNING 2025-10-04 16:01:05,322 log 2640 60616 Not Found: /favicon.ico
+WARNING 2025-10-04 16:01:05,326 basehttp 2640 60616 "GET /favicon.ico HTTP/1.1" 404 2982
+INFO 2025-10-04 16:01:05,447 basehttp 2640 14004 "GET /static/admin/css/base.css HTTP/1.1" 304 0
+INFO 2025-10-04 16:01:05,450 basehttp 2640 41472 "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+INFO 2025-10-04 16:01:05,453 basehttp 2640 62584 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2025-10-04 16:01:05,458 basehttp 2640 14004 "GET /static/admin/css/login.css HTTP/1.1" 304 0
+INFO 2025-10-04 16:01:05,481 basehttp 2640 41472 "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2025-10-04 16:01:05,679 basehttp 2640 41472 "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+INFO 2025-10-04 16:01:05,679 basehttp 2640 14004 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+INFO 2025-10-04 16:15:17,807 basehttp 2640 56588 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+INFO 2025-10-04 16:15:23,973 _client 2640 56588 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-04 16:15:33,397 _client 2640 56588 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-04 16:15:33,411 simple_email_service 2640 56588 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+INFO 2025-10-04 16:15:34,411 microsoft_graph_email_fixed 2640 56588 Acquiring new Microsoft Graph token
+INFO 2025-10-04 16:15:37,638 microsoft_graph_email_fixed 2640 56588 Microsoft Graph token acquired successfully
+INFO 2025-10-04 16:15:41,342 microsoft_graph_email_fixed 2640 56588 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-10-04 16:15:41,348 basehttp 2640 56588 "POST /auth/signup/ HTTP/1.1" 201 256
+INFO 2025-10-04 16:21:49,421 _client 2640 16020 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-04 16:21:56,640 _client 2640 16020 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-04 16:21:56,649 simple_email_service 2640 16020 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+INFO 2025-10-04 16:22:00,452 microsoft_graph_email_fixed 2640 16020 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-10-04 16:22:00,462 basehttp 2640 16020 "POST /auth/signup/ HTTP/1.1" 201 256
+INFO 2025-10-04 17:25:04,630 _client 2640 2144 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-04 17:25:12,273 _client 2640 2144 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-04 17:25:12,287 simple_email_service 2640 2144 Sending OTP to ali.balogun@escapetech.net using provider.send_otp()
+INFO 2025-10-04 17:25:13,260 microsoft_graph_email_fixed 2640 2144 Acquiring new Microsoft Graph token
+INFO 2025-10-04 17:25:16,007 microsoft_graph_email_fixed 2640 2144 Microsoft Graph token acquired successfully
+INFO 2025-10-04 17:25:19,293 microsoft_graph_email_fixed 2640 2144 Email sent successfully to ali.balogun@escapetech.net
+INFO 2025-10-04 17:25:19,301 basehttp 2640 2144 "POST /auth/signup/ HTTP/1.1" 201 256
+INFO 2025-10-04 17:43:00,152 _client 2640 53060 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-04 17:43:07,496 _client 2640 53060 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-04 17:43:07,509 simple_email_service 2640 53060 Sending OTP to alibalogun996@gmail.com using provider.send_otp()
+INFO 2025-10-04 17:43:11,092 microsoft_graph_email_fixed 2640 53060 Email sent successfully to alibalogun996@gmail.com
+INFO 2025-10-04 17:43:11,098 basehttp 2640 53060 "POST /auth/signup/ HTTP/1.1" 201 251
+INFO 2025-10-05 09:46:30,432 basehttp 2640 65700 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+INFO 2025-10-05 09:46:35,949 _client 2640 65700 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-05 09:46:43,398 _client 2640 65700 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-05 09:46:43,430 simple_email_service 2640 65700 Sending OTP to friday-pecan-tasty@duck.com using provider.send_otp()
+INFO 2025-10-05 09:46:44,026 microsoft_graph_email_fixed 2640 65700 Acquiring new Microsoft Graph token
+INFO 2025-10-05 09:46:46,610 microsoft_graph_email_fixed 2640 65700 Microsoft Graph token acquired successfully
+INFO 2025-10-05 09:46:50,016 microsoft_graph_email_fixed 2640 65700 Email sent successfully to friday-pecan-tasty@duck.com
+INFO 2025-10-05 09:46:50,024 basehttp 2640 65700 "POST /auth/signup/ HTTP/1.1" 201 251
+INFO 2025-10-05 20:23:42,354 basehttp 2640 59728 "OPTIONS /auth/login/ HTTP/1.1" 200 0
+WARNING 2025-10-05 20:24:03,968 log 2640 59728 Unauthorized: /auth/login/
+WARNING 2025-10-05 20:24:03,971 basehttp 2640 59728 "POST /auth/login/ HTTP/1.1" 401 77
+INFO 2025-10-05 20:25:14,884 basehttp 2640 59728 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+WARNING 2025-10-05 20:25:28,399 log 2640 59728 Bad Request: /auth/signup/
+WARNING 2025-10-05 20:25:28,402 basehttp 2640 59728 "POST /auth/signup/ HTTP/1.1" 400 82
+WARNING 2025-10-05 20:25:58,854 log 2640 59728 Bad Request: /auth/signup/
+WARNING 2025-10-05 20:25:58,857 basehttp 2640 59728 "POST /auth/signup/ HTTP/1.1" 400 82
+INFO 2025-10-05 20:30:02,349 _client 2640 59728 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-05 20:30:11,713 _client 2640 59728 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-05 20:30:11,755 simple_email_service 2640 59728 Sending OTP to grain-tummy-stucco@duck.com using provider.send_otp()
+INFO 2025-10-05 20:30:12,724 microsoft_graph_email_fixed 2640 59728 Acquiring new Microsoft Graph token
+INFO 2025-10-05 20:30:16,390 microsoft_graph_email_fixed 2640 59728 Microsoft Graph token acquired successfully
+INFO 2025-10-05 20:30:20,788 microsoft_graph_email_fixed 2640 59728 Email sent successfully to grain-tummy-stucco@duck.com
+INFO 2025-10-05 20:30:20,795 basehttp 2640 59728 "POST /auth/signup/ HTTP/1.1" 201 256
+INFO 2025-10-05 22:33:47,646 basehttp 2640 64812 "OPTIONS /auth/resend-otp/ HTTP/1.1" 200 0
+ERROR 2025-10-05 22:33:47,710 log 2640 64812 Internal Server Error: /auth/resend-otp/
+ERROR 2025-10-05 22:33:47,715 basehttp 2640 64812 "POST /auth/resend-otp/ HTTP/1.1" 500 121
+INFO 2025-10-06 11:47:04,451 autoreload 2640 58780 C:\Users\aliba\Documents\Hesabu\pefoma_backend\auth_integration\views.py changed, reloading.
+INFO 2025-10-06 11:47:09,203 autoreload 35184 50236 Watching for file changes with StatReloader
+INFO 2025-10-06 11:47:12,596 simple_email_service 35184 50236 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-06 11:47:27,746 autoreload 63400 65628 Watching for file changes with StatReloader
+INFO 2025-10-06 11:47:29,324 simple_email_service 63400 65628 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-06 21:42:14,114 autoreload 63400 65628 C:\Users\aliba\Documents\Hesabu\pefoma_backend\api\urls.py changed, reloading.
+INFO 2025-10-06 21:42:17,661 autoreload 23036 30128 Watching for file changes with StatReloader
+INFO 2025-10-06 21:42:20,857 simple_email_service 23036 30128 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-06 22:08:19,714 autoreload 23036 30128 C:\Users\aliba\Documents\Hesabu\pefoma_backend\api\views.py changed, reloading.
+INFO 2025-10-06 22:08:21,857 autoreload 5668 22876 Watching for file changes with StatReloader
+INFO 2025-10-06 22:08:23,495 simple_email_service 5668 22876 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 08:00:04,987 simple_email_service 17868 60316 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 08:07:50,288 simple_email_service 47168 49240 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 14:29:23,941 simple_email_service 24412 32032 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 14:32:27,694 simple_email_service 44980 45680 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 15:09:13,619 simple_email_service 58524 2500 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 15:09:29,489 simple_email_service 37704 60008 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 15:17:09,128 simple_email_service 33664 58424 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 16:01:58,260 simple_email_service 50224 56196 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 16:02:24,622 autoreload 5380 39636 Watching for file changes with StatReloader
+INFO 2025-10-07 16:02:26,146 simple_email_service 5380 39636 [SUCCESS] Microsoft Graph email provider initialized
+INFO 2025-10-07 16:25:05,283 basehttp 5380 66624 "OPTIONS /auth/signup/ HTTP/1.1" 200 0
+INFO 2025-10-07 16:25:11,990 _client 5380 66624 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/auth/v1/signup "HTTP/1.1 200 OK"
+INFO 2025-10-07 16:25:17,221 _client 5380 66624 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-07 16:25:17,231 simple_email_service 5380 66624 Sending OTP to alibalogun996@gmail.com using provider.send_otp()
+INFO 2025-10-07 16:25:17,948 microsoft_graph_email_fixed 5380 66624 Acquiring new Microsoft Graph token
+INFO 2025-10-07 16:25:19,508 microsoft_graph_email_fixed 5380 66624 Microsoft Graph token acquired successfully
+INFO 2025-10-07 16:25:21,996 microsoft_graph_email_fixed 5380 66624 Email sent successfully to alibalogun996@gmail.com
+INFO 2025-10-07 16:25:21,999 basehttp 5380 66624 "POST /auth/signup/ HTTP/1.1" 201 250
+INFO 2025-10-07 16:25:54,416 basehttp 5380 66624 "OPTIONS /auth/verify-otp/ HTTP/1.1" 200 0
+INFO 2025-10-07 16:26:00,074 _client 5380 66624 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/verify_otp "HTTP/1.1 200 OK"
+WARNING 2025-10-07 16:26:00,082 log 5380 66624 Bad Request: /auth/verify-otp/
+WARNING 2025-10-07 16:26:00,085 basehttp 5380 66624 "POST /auth/verify-otp/ HTTP/1.1" 400 108
+INFO 2025-10-07 16:27:16,991 _client 5380 66624 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/verify_otp "HTTP/1.1 200 OK"
+WARNING 2025-10-07 16:27:16,998 log 5380 66624 Bad Request: /auth/verify-otp/
+WARNING 2025-10-07 16:27:17,000 basehttp 5380 66624 "POST /auth/verify-otp/ HTTP/1.1" 400 108
+INFO 2025-10-07 17:16:47,805 basehttp 5380 15816 "OPTIONS /auth/resend-otp/ HTTP/1.1" 200 0
+INFO 2025-10-07 17:16:55,541 _client 5380 15816 HTTP Request: POST https://jgifsfiyhkackzkjsnsq.supabase.co/rest/v1/rpc/generate_otp "HTTP/1.1 200 OK"
+INFO 2025-10-07 17:16:56,906 simple_email_service 5380 15816 Sending OTP to alibalogun996@gmail.com using provider.send_otp()
+INFO 2025-10-07 17:17:00,401 microsoft_graph_email_fixed 5380 15816 Email sent successfully to alibalogun996@gmail.com
+INFO 2025-10-07 17:17:00,412 basehttp 5380 15816 "POST /auth/resend-otp/ HTTP/1.1" 200 171

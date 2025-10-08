@@ -13,6 +13,7 @@ urlpatterns = [
     path('v1/', include([
         path('auth/', include('auth_integration.urls')),
         path('users/', include('users.urls')),
+        path('dashboard/', include('dashboard.urls')),
         path('test/', views.ProtectedTestView.as_view(), name='protected_test'),
         # Future modules will be added here
         # path('inventory/', include('inventory.urls')),
